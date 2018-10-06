@@ -4,8 +4,8 @@ import pygame
 from obstacle import Obstacle as Ob 
 from generator import *
 
-NUMBER_OF_ENEMIES   = 10
-NUMBER_OF_OBSTACLES = 5
+NUMBER_OF_ENEMIES   = 25
+NUMBER_OF_OBSTACLES = 10
 
 START_POSITION      = [512,360]
 

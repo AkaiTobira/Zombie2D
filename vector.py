@@ -49,3 +49,14 @@ class Vector:
 		
 	def is_zero_len(self):
 		return self.x == 0.0 and self.y == 0.0
+		
+	def to_table(self):
+		return [int(self.x), int(self.y)]
+		
+	def norm(self):
+		if self.is_zero_len():
+			return Vector(0.0,0.0)
+		return self * (1/self.len())
+		
+	def sign(self):
+		return Vector( 1 if self.x > 0 else 0 if self.x == 0 else -1, 1 if self.y > 0 else 0 if self.y == 0 else -1  )

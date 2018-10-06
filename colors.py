@@ -5,6 +5,8 @@ class Colors(Enum):
 	LIGHT_BLUE   = (24,191,158)
 	LIGHT_PURPLE = (159,133,188)
 	LIGHT_RED    = (255,21,82)
+	RED          = (255,0,0)
+	GREEN        = (0,255,0)
 	
 def get_color( color ):
 	if color == Colors.LIGHT_BLUE:
@@ -13,3 +15,7 @@ def get_color( color ):
 		return (159,133,188)
 	if color == Colors.LIGHT_RED:
 		return (255,21,82)
+	if color == Colors.RED:
+		return (255,0,0)
+	if color == Colors.GREEN:
+		return (0,255,0)

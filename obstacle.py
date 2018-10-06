@@ -37,10 +37,6 @@ class Obstacle:
 		self.pos[1] += speed[1]
 		
 	def process_event(self,event):
-	
-		if event.type == Events.CREATE:
-			print( event.name )
-	
 		pass
 		
 	def process_physic(self):

@@ -37,14 +37,11 @@ class Game:
 		self.generator     = ObjectsGenerator(self.screen, NUMBER_OF_ENEMIES, NUMBER_OF_OBSTACLES)
 		self.__init_screen_objects()
 
-		#logo = pygame.image.load("logo32x32.png")
-		#pygame.display.set_icon(logo)
-
-
 	def is_running(self):
 		return self.running
 	
 	def draw(self):
+		self.screen.fill((0,0,0))
 		for obj in self.obj_on_screen:
 			obj.draw()
 		self.player.draw()

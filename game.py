@@ -41,7 +41,7 @@ class Game:
 		return self.running
 	
 	def draw(self):
-		self.screen.fill((0,0,0))
+		self.screen.fill((20,30,47))
 		for obj in self.obj_on_screen:
 			obj.draw()
 		self.player.draw()

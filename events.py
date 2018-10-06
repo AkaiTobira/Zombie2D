@@ -15,7 +15,11 @@ from enum import IntEnum
 
 
 class Events(IntEnum):
-	CREATE = 0
+	CREATE 		= 0
+	K_UP   		= 1
+	K_DOWN   	= 2
+	K_LEFT   	= 3
+	K_RIGHT   	= 4	
 	
-def rise_event( event_type, desciption):
-	pygame.event.post(pygame.event.Event(int(event_type), desciption))
+def rise_event(event_type, description):
+	pygame.event.post(pygame.event.Event(int(event_type), description))

@@ -12,18 +12,20 @@ class Enemy:
 	r     = 0.0
 	pos   = [0.0,0.0]
 	color = (0,0,0)
+	thick = 0.0
 	current_screen = None
 	
 
 	
-	def __init__(self,color,position,radius, screen):
+	def __init__(self, color ,position, radius, thickness, screen):
 		self.r     			= radius
 		self.pos   			= position
 		self.color			= color
+		self.thick			= thickness
 		self.current_screen = screen
 	
 	def draw(self):
-		pygame.draw.circle(self.current_screen,  self.color, self.pos, self.r )
+		pygame.draw.circle(self.current_screen, self.color, self.pos, self.r, self.thick )
 
 		
 	def process_event(self,event):

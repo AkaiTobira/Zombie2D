@@ -1,7 +1,7 @@
 import pygame
 
-
 from random import *
+from random import randint
 from events import *
 from obstacle import *
 from player import *
@@ -12,6 +12,9 @@ def generate_random_color():
 	
 def generate_random_position(left_up, right_down):
 	return [ generate_int(left_up[0],right_down[0]), generate_int(left_up[1],right_down[1]) ] 
+
+def generate_random_size(v_min, v_max):
+	return generate_int(v_min, v_max)
 	
 def generate_int(lower, upper):
 	return int(random()*upper) + lower 
@@ -24,7 +27,6 @@ class ObjectsGenerator:
 	object_list         = []
 	
 	
-	
 	def __init__(self, screen, enemy_counter, obstacle_counter):
 		self.screen 		 	 = screen
 		self.number_of_enemy 	 = enemy_counter
@@ -33,22 +35,25 @@ class ObjectsGenerator:
 	def generate_enemy(self):
 		for i in range(self.number_of_enemy):
 			self.object_list.append(Enemy(
-				(255,0,0),
+				(24,191,158),
 				generate_random_position( [0,0], [1024,720] ),
-				5,
+				6,
+				6, # dla pelnego zamalowania 6
 				self.screen)
 				)
 	
 	def get_spawned_player(self, position):
-		return Player((255,255,255),[512,360],10,self.screen)
+	#	return Player((255,21,82), [512,360], 12, 12, self.screen)
+		return Player((255,21,82), 512, 360, 10, 3, self.screen)
 		
 	def generate_obstacles(self):	
 		for i in range(self.number_of_obstacles):
-
+			size = generate_random_size(15, 30)
 			self.object_list.append(Obstacle(
-				(0,123,123),
+				(159,133,188),
 				generate_random_position( [0,0], [1024,720] ),
-				20,
+				size,
+				2, # pełne zamalowanie: size
 				self.screen)
 				)
 		
@@ -57,7 +62,7 @@ class ObjectsGenerator:
 		self.generate_obstacles()
 		self.generate_enemy()
 		
-		rise_event(Events.CREATE, { "name" : "Create_EVent" } )
+		rise_event(Events.CREATE, { "name" : "Create_Event" } )
 		
 		return self.object_list
 		

@@ -29,8 +29,5 @@ class Enemy:
 	
 		pass
 		
-	def process_physic(self):
-		pass
-		
 	def update(self, delta):
 		pass

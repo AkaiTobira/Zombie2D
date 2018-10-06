@@ -14,6 +14,8 @@ class Obstacle:
 		self.pos   			= position
 		self.color			= color
 		self.current_screen = screen
+		
+		print ( self.r, self.pos, self.color ) 
 	
 	def set_screen(self, screen):
 		self.current_screen = screen

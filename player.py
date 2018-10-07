@@ -5,21 +5,23 @@ from events import *
 # autorska biblioteka z vectorami
 from vector import Vector
 
+import math
+
 class Triangle:
-	vertices = [ Vector(0.0,0.0), Vector(0.0, 0.0), Vector(0.0, 0.0)]
+	vertices = [ Vector(0.0,0.0), Vector(0.0,0.0), Vector(0.0,0.0) ]
 	basic    = [] 
 	
-	def __init__(self, size ):
+	def __init__(self, size):
 		
 		half_of_size = (0.5 * size)
 	
-		self.vertices[0].x = - half_of_size
-		self.vertices[0].y = - half_of_size
+		self.vertices[0].x = 0.0
+		self.vertices[0].y = -half_of_size
 		
-		self.vertices[1].x = half_of_size
-		self.vertices[1].y = - half_of_size
+		self.vertices[1].x = -half_of_size
+		self.vertices[1].y = half_of_size
 		
-		self.vertices[2].x = 0.0 
+		self.vertices[2].x = half_of_size 
 		self.vertices[2].y = half_of_size
 		
 		self.basic = self.vertices.copy()
@@ -51,13 +53,10 @@ class Player:
 	y 	   = 0.0
 	r      = 0.0
 	thick  = 0.0
-	color  = (0,0,0) # 255, 21, 82
+	color  = (0,0,0)
 	current_screen 	= None
 
-	pressed_left   	= False	
-	pressed_right   = False	
-	pressed_up   	= False	
-	pressed_down   	= False	
+	pressed = [False, False, False, False] # [up, down, left, right]
 
 	direction 		= "up"
 
@@ -82,7 +81,8 @@ class Player:
 		# for collisions
 		self.current_position  	= Vector(pos_x, pos_y)
 		self.previous_position 	= Vector(pos_x, pos_y)
-		self.relative_point     = Vector(self.current_position.x, self.current_position.y + 1).norm()
+		self.relative_point     = Vector(
+			self.current_position.x, self.current_position.y + 1).norm()
 		self.x 					= pos_x
 		self.y 					= pos_y
 		self.color				= color
@@ -98,6 +98,14 @@ class Player:
 			self.graphic.to_draw(self.current_position), 
 			self.thick )
 		
+
+	def keydown_event_handler(self, vec, d, angle):
+		self.current_position += vec
+		if self.direction != d:
+			self.direction = d
+			self.rotate_angle = angle
+			self.rotation_change = True
+
 	# funkcja odpowiedzialna za obsluge zdarzen
 	def process_event(self, event):
  	
@@ -126,32 +134,17 @@ class Player:
 	
 		if event.type == pygame.KEYDOWN:
 			if event.scancode == 75 or event.scancode == 30:
-				self.current_position += Vector(-1.0, 0.0)
-				if self.direction != "right":
-					self.direction = "right"
-					self.rotate_angle = 3.14/2
-					self.rotation_change = True
+				self.keydown_event_handler(Vector(-1.0, 0.0), "right", -math.pi/2)
 				
 			if event.scancode == 77 or event.scancode == 32:
-				self.current_position += Vector(1.0, 0.0)
-				if self.direction != "left":
-					self.direction = "left"	
-					self.rotate_angle = -3.14/2
-					self.rotation_change = True
+				self.keydown_event_handler(Vector(1.0, 0.0), "left", math.pi/2)
+
 			if event.scancode == 72 or event.scancode == 17:
-				self.current_position += Vector(0.0, 1.0)
-				if self.direction != "up":
-					self.direction = "up"
-					self.rotate_angle = 3.14
-					self.rotation_change = True
+				self.keydown_event_handler(Vector(0.0, -1.0), "up", 0)
+	
 			if event.scancode == 80 or event.scancode == 31:
-				self.current_position += Vector(0.0, -1.0)
-				if self.direction != "down":
-					self.direction = "down"
-					self.rotate_angle = 0
-					self.rotation_change = True
-		
-		
+				self.keydown_event_handler(Vector(0.0, 1.0), "down", math.pi)
+
 		
 	# funcja odpowiedzialna ze aktualizacje stanu/ ruch, kolor, kwiatki,
 	# baranki .. i kucyki ... zawsze kucyki 

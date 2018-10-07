@@ -83,23 +83,24 @@ class Player:
 			print( event.name )
 
 		elif event.type == pygame.KEYDOWN:
-			if event.scancode == (75 or 30):
+			print(event)
+			if event.scancode == 75 or event.scancode == 30:
 				self.pressed_left = True	
-			if event.scancode == (77 or 32):
+			if event.scancode == 77 or event.scancode == 32:
 				self.pressed_right = True
-			if event.scancode == (72 or 17):
+			if event.scancode == 72 or event.scancode == 17:
 				self.pressed_down = True
-			if event.scancode == (80 or 31):
+			if event.scancode == 80 or event.scancode == 31:
 				self.pressed_up = True
 
 		elif event.type == pygame.KEYUP:
-			if event.scancode == (75 or 30):
+			if event.scancode == 75 or event.scancode == 30:
 				self.pressed_left = False
-			if event.scancode == (77 or 32):
+			if event.scancode == 77 or event.scancode == 32:
 				self.pressed_right = False
-			if event.scancode == (72 or 17):
+			if event.scancode == 72 or event.scancode == 17:
 				self.pressed_down = False
-			if event.scancode == (80 or 31):
+			if event.scancode == 80 or event.scancode == 31:
 				self.pressed_up = False		
 		pass
 		

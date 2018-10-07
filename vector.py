@@ -9,6 +9,9 @@ class Vector:
 		self.x = x
 		self.y = y
 		
+	def __rep__(self):
+		return self.__str__
+	
 	def __add__(self, vec):
 		return Vector(self.x + vec.x, self.y + vec.y)
 		
@@ -47,16 +50,25 @@ class Vector:
 	def abs(self):
 		return Vector(math.fabs(self.x), math.fabs(self.y))
 		
+	def angle_between(self,v):
+		return math.acos( self.dot(v) * ( 1.0 / ( v.len() + self.len() )  ))
+		
 	def is_zero_len(self):
 		return self.x == 0.0 and self.y == 0.0
 		
 	def to_table(self):
 		return [int(self.x), int(self.y)]
 		
+	def to_touple(self):
+		return ( int(self.x), int(self.y) )
+		
 	def norm(self):
 		if self.is_zero_len():
 			return Vector(0.0,0.0)
 		return self * (1/self.len())
+	
+	def trunc(self, v):
+		return Vector( self.x if self.x < v.x else v.x, self.y if self.y < v.y else v.y ) 
 		
 	def rotate(self, angle, axis = None ):
 		if axis == None:

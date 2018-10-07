@@ -13,7 +13,9 @@ class Enemy:
 	current_position  = Vector(0.0,0.0)
 	previous_position = Vector(0.0,0.0)
 	
-
+	seing_ahead       = Vector(0.0,0.0)
+	seing_ahead_short = Vector(0.0,0.0)
+	f                 = Vector(0.0,0.0)
 	id          = -1
 
 	destination = Vector(0.0,0.0)
@@ -37,15 +39,25 @@ class Enemy:
 		self.current_position = Vector(randint(0,self.screen_size.x), randint(0,self.screen_size.y))
 		self.previous_position= self.current_position
 		
-
 		self.destination      = self.current_position
-		self.distance         = Vector(0.0,0.0)
 		self.id               = id
+		
+		self.distance         = Vector(0.0,0.0)
+	
 	
 	def draw(self):
 		pygame.draw.circle(self.current_screen, self.COLOR, self.current_position.to_table(), self.RADIUS, self.THICKNESS )
+		
+		# draw destination
 		pygame.draw.line(self.current_screen, get_color(Colors.RED),self.current_position.to_table(), self.destination.to_table() )
-		pygame.draw.line(self.current_screen, get_color(Colors.GREEN),self.current_position.to_table(),(self.current_position + self.distance.norm() * 20 * self.speed).to_table())
+		
+		# draw velocity
+		pygame.draw.line(self.current_screen, get_color(Colors.GREEN),self.current_position.to_table(),(self.current_position + self.f + self.distance.norm() * 20 * self.speed).to_table())
+	
+		# draw shorter ahead
+		pygame.draw.line(self.current_screen, get_color(Colors.GREEN),self.current_position.to_table(),(self.seing_ahead).to_table())
+		# draw longer  ahead
+		pygame.draw.line(self.current_screen, get_color(Colors.BLUE),self.current_position.to_table(),(self.seing_ahead_short).to_table())
 		
 		
 	def process_event(self,event):
@@ -59,6 +71,9 @@ class Enemy:
 				self.previous_position   = self.current_position
 			return 
 		
+	def apply_force(self, f):
+		self.f = f
+		pass
 		
 	def stop_unit(self):
 		self.current_position = self.previous_position 
@@ -66,11 +81,10 @@ class Enemy:
 		self.velocity         = Vector(0.0,0.0)
 		self.state            = "Wait"
 	
-	def move_by(self, velocity, destination):
+	def move_to(self, destination):
 		self.state       = "Move"
 		self.destination = destination
-		self.distance    = self.current_position.distance_to(self.destination)
-		self.velocity    = velocity
+		self.velocity = self.current_position.distance_to(self.destination).norm() * self.speed
 		
 	def __check_stop(self, left_distance):
 		stop = False
@@ -87,9 +101,28 @@ class Enemy:
 		
 	def update(self, delta):
 			if self.state == "Move":
-				velocity = self.velocity * self.speed
-				left_distance = self.distance.abs() - velocity.abs()
-				self.distance -= velocity
+				desired_velocity = self.current_position.distance_to(self.destination).norm() * self.speed
+	#			
+	#			self.seing_ahead       = self.current_position + self.velocity * self.speed * 10
+	#			self.seing_ahead_short = self.current_position + self.velocity * self.speed * (10/2)
+				
+				steeing = desired_velocity - self.velocity  # + self.f.norm() * self.speed
+				
+	#			steeing.trunc(Vector(1,1))
+				
+				velocity = (self.velocity + steeing)
+			
+	#			self.seing_ahead = self.seing_ahead * (velocity.len() / self.speed)
+	#			self.seing_ahead_short = self.seing_ahead_short * (velocity.len() / self.speed)
+			
+	#		
+	#			velocity = (self.velocity + self.f) * self.speed 
+	#			self.distance = self.current_position.distance_to(self.destination)
+	#			left_distance = self.distance.abs() - velocity.abs()
+	#			self.distance -= velocity
+#
+				distance = self.current_position.distance_to(self.destination).abs() - velocity.abs()
 
-				self.__check_stop(left_distance)
+				self.__check_stop(distance)
 				self.__move(velocity, delta)
+				pass

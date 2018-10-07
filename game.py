@@ -5,8 +5,8 @@ from obstacle  import Obstacle as Ob
 from physic    import *
 from generator import *
 
-NUMBER_OF_ENEMIES   = 50
-NUMBER_OF_OBSTACLES = 10
+NUMBER_OF_ENEMIES   = 20
+NUMBER_OF_OBSTACLES = 30
 
 START_POSITION      = [512,360]
 

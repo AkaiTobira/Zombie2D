@@ -58,15 +58,39 @@ class MoveSystem:
 		self.entity_list = units
 		self.player      = player
 
+	def __line_intersect(self, position):
+		for unit in self.entity_list:
+			if unit.state == "Const":
+				if position.distance_to(unit.current_position).len() < unit.RADIUS:
+					return unit
+		return None
+
+	
 	def update(self, delta):
 		for unit in self.entity_list:
 			if unit.state == "Wait":
 				destination = Vector( randint(0,1024), randint(0, 600) )
-				velocity    = unit.current_position.distance_to(destination).norm()# * delta
-				unit.move_by(velocity, destination)
+				unit.move_to(destination)
 			elif unit.state == "Move":
+				
+				unit_far   = self.__line_intersect( unit.seing_ahead )   
+				unit_short = self.__line_intersect( unit.seing_ahead_short )
+			
+				force = Vector(0.0,0.0)
+			
+				if unit_far == None:
+					if unit_short == None:
+						pass
+					else:
+						force = (unit.seing_ahead - unit_short.current_position).norm() * 10						
+				else:
+					force = (unit.seing_ahead - unit_far.current_position).norm() * 10
+
+				unit.apply_force(force)
 				unit.update(delta)
 				
+		self.player.update(delta)
+					
 class CollisionSystem:
 	entity_list = []
 	player      = None

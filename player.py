@@ -56,7 +56,12 @@ class Player:
 	color  = (0,0,0)
 	current_screen 	= None
 
-	key_pressed = [False, False, False, False] # [up, down, left, right]
+	key_pressed = { 
+					"up"   : False, 
+					"down" : False, 
+					"left" : False, 
+					"right": False
+				   } 
 
 	direction 		= "up"
 
@@ -107,35 +112,31 @@ class Player:
 			self.rotate_angle = angle
 			self.rotation_change = True
 
-	def enable_key_pressed(self, scancode):
-	
+			
+	def scancode_to_direction(self, scancode): # to by się już dało tylko dziedziczeniem
 		if scancode == 75 or scancode == 30:
-			self.key_pressed[3] = True
+			return "right"
 		if scancode == 77 or scancode == 32:
-			self.key_pressed[2] = True
+			return "left"
 		if scancode == 72 or scancode == 17:
-			self.key_pressed[0] = True
+			return  "up"
 		if scancode == 80 or scancode == 31:
-			self.key_pressed[1] = True	
+			return  "down"	
+			
+	def enable_key_pressed(self, direction):
+		self.key_pressed[direction] = True
 
-	def disable_key_pressed(self, scancode):
-		if scancode == 75 or scancode == 30:
-			self.key_pressed[3] = False
-		if scancode == 77 or scancode == 32:
-			self.key_pressed[2] = False
-		if scancode == 72 or scancode == 17:
-			self.key_pressed[0] = False
-		if scancode == 80 or scancode == 31:
-			self.key_pressed[1] = False						
+	def disable_key_pressed(self, direction):
+		self.key_pressed[direction] = False
 
-	def handle_direction_key_press(self): # nazwa do ustalenia
-		if self.key_pressed[0]:
+	def handle_direction_key_press(self): # da się zrefaktorować ale przestanie się obracać
+		if self.key_pressed["up"]:
 			self.set_direction(Vector(0.0, -1.0), "up", 0)
-		if self.key_pressed[1]:
+		if self.key_pressed["down"]:
 			self.set_direction(Vector(0.0, 1.0), "down", math.pi)
-		if self.key_pressed[2]:
+		if self.key_pressed["left"]:
 			self.set_direction(Vector(1.0, 0.0), "left", math.pi/2)
-		if self.key_pressed[3]:	
+		if self.key_pressed["right"]:	
 			self.set_direction(Vector(-1.0, 0.0), "right", -math.pi/2)
 
 	# funkcja odpowiedzialna za obsluge zdarzen
@@ -164,9 +165,9 @@ class Player:
 				self.previous_position   = self.current_position
 	
 		if event.type == pygame.KEYDOWN:
-			self.enable_key_pressed(event.scancode)
+			self.enable_key_pressed(self.scancode_to_direction(event.scancode))
 		elif event.type == pygame.KEYUP:
-			self.disable_key_pressed(event.scancode)	
+			self.disable_key_pressed(self.scancode_to_direction(event.scancode))
 			self.velocity = Vector(0,0)
 
 		

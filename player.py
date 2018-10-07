@@ -42,6 +42,10 @@ class Triangle:
 # kazdy obiekt na scenie musi miec metode draw, process_event i update :) z 
 # taka samą nazwą i iloscia argumntów
 class Player:
+
+	RADIUS = 10
+	id = 0
+
 	# pola klasy
 	x 	   = 0.0
 	y 	   = 0.0
@@ -64,6 +68,8 @@ class Player:
 	current_position  = Vector(0,0)
 	previous_position = Vector(0,0)
 	relative_point    = Vector(0,0)
+	velocity          = Vector(0,0)
+	
 	graphic = Triangle(0)
 	
 	rotation_angle = 0.0
@@ -109,6 +115,14 @@ class Player:
 	#		self.rotation_change = True
 	#		self.rotation_change = True
 	#		pass
+	
+		if event.type == Events.COLLIDE:
+			self.current_position = event.where
+			
+			if event.stuck :
+				self.current_position = Vector(randint(0,self.screen_size.x), randint(0,self.screen_size.y))
+				self.previous_position   = self.current_position
+	
 	
 		if event.type == pygame.KEYDOWN:
 			if event.scancode == 75 or event.scancode == 30:

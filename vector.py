@@ -35,6 +35,9 @@ class Vector:
 			return Vector(self.x*v, self.y*v)
 		return Vector(self.x * v.x, self.y * v.y)
 		
+	def __truediv__(self, val ):
+		return self.__mul__(1.0/val)
+		
 	def __rmul__(self,v):
 		return self.__mul__(v)
 			

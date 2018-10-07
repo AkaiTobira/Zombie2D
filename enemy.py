@@ -55,9 +55,9 @@ class Enemy:
 		pygame.draw.line(self.current_screen, get_color(Colors.GREEN),self.current_position.to_table(),(self.current_position + self.f + self.distance.norm() * 20 * self.speed).to_table())
 	
 		# draw shorter ahead
-		pygame.draw.line(self.current_screen, get_color(Colors.GREEN),self.current_position.to_table(),(self.seing_ahead).to_table())
+		#pygame.draw.line(self.current_screen, get_color(Colors.GREEN),self.current_position.to_table(),(self.seing_ahead).to_table())
 		# draw longer  ahead
-		pygame.draw.line(self.current_screen, get_color(Colors.BLUE),self.current_position.to_table(),(self.seing_ahead_short).to_table())
+		#pygame.draw.line(self.current_screen, get_color(Colors.BLUE),self.current_position.to_table(),(self.seing_ahead_short).to_table())
 		
 		
 	def process_event(self,event):

@@ -29,6 +29,9 @@ class UnitManager:
 	def process_input(self,event):
 	
 		if event.type == Events.COLLIDE:
+			if event.who == 0:
+				self.player.process_event(event)
+				return 
 			for unit in self.entity_list:
 				if unit.id == event.who:
 					unit.process_event(event)
@@ -118,3 +121,17 @@ class CollisionSystem:
 							if unit_2.state == "Move":
 								rise_event(Events.COLLIDE, { "who" : unit_2.id, "stuck" : False, "with" : unit.id, "where" : unit_2.current_position - unit_2.velocity  } )
 							pass
+							
+		for unit in self.entity_list:
+			if unit.state == "Move":
+				distance = ( unit.current_position + unit.velocity ).distance_to(self.player.current_position + self.player.velocity)
+				if distance.len() > 60.0:
+					continue
+				offset = 1
+				if distance.len() <= math.fabs( unit.RADIUS + self.player.RADIUS + offset ) :
+					if distance.len() <= math.fabs(self.player.RADIUS - unit.RADIUS + offset):
+						rise_event( Events.COLLIDE,  { "who" : unit.id, "stuck" : True,"with" : self.player.id, "where" : unit.current_position - unit.velocity } )
+					else:
+						rise_event(Events.COLLIDE, { "who" : unit.id, "stuck" : False, "with" : self.player.id, "where" : unit.current_position - unit.velocity  } )
+						if not self.player.velocity.is_zero_len():
+							rise_event(Events.COLLIDE, { "who" : self.player.id, "stuck" : False, "with" : unit.id, "where" : self.player.current_position - self.player.velocity  } )

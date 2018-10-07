@@ -5,7 +5,7 @@ from obstacle  import Obstacle as Ob
 from physic    import *
 from generator import *
 
-NUMBER_OF_ENEMIES   = 25
+NUMBER_OF_ENEMIES   = 50
 NUMBER_OF_OBSTACLES = 10
 
 START_POSITION      = [512,360]
@@ -46,7 +46,10 @@ class Game:
 		self.unitManager.draw()
 		
 	def process_input(self):
-		for event in pygame.event.get():
+		while True:
+			event = pygame.event.poll()
+			if event.type == pygame.NOEVENT:
+				return
 			if event.type == pygame.QUIT:
 				self.running = False
 				return
@@ -56,7 +59,7 @@ class Game:
 	def __calculate_delta_time(self):
 		delta = pygame.time.get_ticks() - self.delta_time_ticks
 		self.delta_time_ticks = delta
-		self.delta_time_seconds = delta/1000.0
+		self.delta_time_seconds = delta/100000.0
 		
 		
 	def process_physic(self):

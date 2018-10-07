@@ -79,9 +79,6 @@ class Player:
 	# funkcja odpowiedzialna za obsluge zdarzen
 	def process_event(self, event):
 
-		if event.type == Events.CREATE:
-			print( event.name )
-
 		elif event.type == pygame.KEYDOWN:
 			print(event)
 			if event.scancode == 75 or event.scancode == 30:

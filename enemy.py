@@ -14,7 +14,7 @@ class Enemy:
 	previous_position = Vector(0.0,0.0)
 	
 
-	id          = 1
+	id          = -1
 
 	destination = Vector(0.0,0.0)
 	distance    = Vector(0.0,0.0)
@@ -26,18 +26,21 @@ class Enemy:
 	state       = "Wait"
 	
 	def __move(self, velocity ,delta):
+		self.previous_position      = self.current_position
 		self.current_position      += velocity
 	
 	
-	def __init__(self,  screen, screen_size):
+	def __init__(self,  screen, screen_size, id):
 
 		self.current_screen   = screen
-		self.current_position = Vector(randint(0,screen_size.x), randint(0,screen_size.y))
+		self.screen_size      = screen_size
+		self.current_position = Vector(randint(0,self.screen_size.x), randint(0,self.screen_size.y))
 		self.previous_position= self.current_position
 		
-		self.screen_size      = screen_size
+
 		self.destination      = self.current_position
 		self.distance         = Vector(0.0,0.0)
+		self.id               = id
 	
 	def draw(self):
 		pygame.draw.circle(self.current_screen, self.COLOR, self.current_position.to_table(), self.RADIUS, self.THICKNESS )
@@ -47,9 +50,22 @@ class Enemy:
 		
 	def process_event(self,event):
 	
-	
-		pass
+		if event.type == Events.COLLIDE:
+			self.stop_unit()
+			self.current_position = event.where
+			
+			if event.stuck :
+				self.current_position = Vector(randint(0,self.screen_size.x), randint(0,self.screen_size.y))
+				self.previous_position   = self.current_position
+			return 
 		
+		
+	def stop_unit(self):
+		self.current_position = self.previous_position 
+		self.destination      = self.current_position
+		self.velocity         = Vector(0.0,0.0)
+		self.state            = "Wait"
+	
 	def move_by(self, velocity, destination):
 		self.state       = "Move"
 		self.destination = destination

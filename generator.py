@@ -25,7 +25,7 @@ class ObjectsGenerator:
 	number_of_enemy     = 0
 	number_of_obstacles = 0
 	object_list         = []
-	
+	id_counter          = 1
 	
 	def __init__(self, screen, enemy_counter, obstacle_counter):
 		self.screen 		 	 = screen
@@ -36,9 +36,11 @@ class ObjectsGenerator:
 		for i in range(self.number_of_enemy):
 			self.object_list.append(Enemy(
 				self.screen,
-				Vector(1024,720)
+				Vector(1024,720),
+				self.id_counter,
 				)
 				)
+			self.id_counter += 1
 	
 	def get_spawned_player(self, position):
 	#	return Player((255,21,82), [512,360], 12, 12, self.screen)
@@ -46,21 +48,18 @@ class ObjectsGenerator:
 		
 	def generate_obstacles(self):	
 		for i in range(self.number_of_obstacles):
-			size = generate_random_size(15, 30)
 			self.object_list.append(Obstacle(
-				get_color(Colors.LIGHT_PURPLE),
-				generate_random_position( [0,0], [1024,720] ),
-				size,
-				2, # pełne zamalowanie: size
-				self.screen)
+				self.screen,
+				Vector(1024,720),
+				self.id_counter
 				)
+				)
+			self.id_counter += 1
 		
 	def create_objects(self):
 		
 		self.generate_obstacles()
 		self.generate_enemy()
-		
-		rise_event(Events.CREATE, { "name" : "Create_Event" } )
 		
 		return self.object_list
 		

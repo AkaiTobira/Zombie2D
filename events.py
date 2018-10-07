@@ -15,8 +15,7 @@ from enum import IntEnum
 
 
 class Events(IntEnum):
-	CREATE 		= 0
-
+	COLLIDE        = 25
 	
 def rise_event(event_type, description):
 	pygame.event.post(pygame.event.Event(int(event_type), description))

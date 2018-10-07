@@ -21,7 +21,7 @@ class Player:
 	pressed_up   	= False	
 	pressed_down   	= False	
 
-	step   = 0.05
+	step   = 0.08
 	
 	current_position  = Vector(0,0)
 	previous_position = Vector(0,0)
@@ -54,23 +54,23 @@ class Player:
 			print( event.name )
 
 		elif event.type == pygame.KEYDOWN:
-			if event.scancode == 75:
+			if event.scancode == (75 or 30):
 				self.pressed_left = True	
-			if event.scancode == 77:
+			if event.scancode == (77 or 32):
 				self.pressed_right = True
-			if event.scancode == 72:
+			if event.scancode == (72 or 17):
 				self.pressed_down = True
-			if event.scancode == 80:
+			if event.scancode == (80 or 31):
 				self.pressed_up = True
 
 		elif event.type == pygame.KEYUP:
-			if event.scancode == 75:
+			if event.scancode == (75 or 30):
 				self.pressed_left = False
-			if event.scancode == 77:
+			if event.scancode == (77 or 32):
 				self.pressed_right = False
-			if event.scancode == 72:
+			if event.scancode == (72 or 17):
 				self.pressed_down = False
-			if event.scancode == 80:
+			if event.scancode == (80 or 31):
 				self.pressed_up = False		
 		pass
 		

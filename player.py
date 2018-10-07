@@ -27,7 +27,7 @@ class Triangle:
 		self.basic = self.vertices.copy()
 		
 	def rotate(self, angle):
-		print( self.basic )
+		#print( self.basic )
 	
 		for i in range(len(self.vertices)):
 			self.vertices[i] = self.basic[i].rotate(angle)
@@ -56,7 +56,7 @@ class Player:
 	color  = (0,0,0)
 	current_screen 	= None
 
-	pressed = [False, False, False, False] # [up, down, left, right]
+	key_pressed = [False, False, False, False] # [up, down, left, right]
 
 	direction 		= "up"
 
@@ -99,22 +99,42 @@ class Player:
 			self.thick )
 		
 
-	def keydown_event_handler(self, vec, d, angle):
-		self.current_position += vec
-		if self.direction != d:
-			self.direction = d
+	def set_new_position_and_direction(self, offset, direction, angle): # nazwa do ustalenia
+		self.current_position += offset
+		if self.direction != direction:
+			self.direction = direction
 			self.rotate_angle = angle
 			self.rotation_change = True
 
-	def scan_event(self, e, b):
-		if e.scancode == 75 or e.scancode == 30:
-			self.pressed[3] = b
-		if e.scancode == 77 or e.scancode == 32:
-			self.pressed[2] = b
-		if e.scancode == 72 or e.scancode == 17:
-			self.pressed[0] = b
-		if e.scancode == 80 or e.scancode == 31:
-			self.pressed[1] = b		
+	def enable_key_pressed(self, scancode):
+		if scancode == 75 or scancode == 30:
+			self.key_pressed[3] = True
+		if scancode == 77 or scancode == 32:
+			self.key_pressed[2] = True
+		if scancode == 72 or scancode == 17:
+			self.key_pressed[0] = True
+		if scancode == 80 or scancode == 31:
+			self.key_pressed[1] = True	
+
+	def disable_key_pressed(self, scancode):
+		if scancode == 75 or scancode == 30:
+			self.key_pressed[3] = False
+		if scancode == 77 or scancode == 32:
+			self.key_pressed[2] = False
+		if scancode == 72 or scancode == 17:
+			self.key_pressed[0] = False
+		if scancode == 80 or scancode == 31:
+			self.key_pressed[1] = False						
+
+	def move_player(self): # nazwa do ustalenia
+		if self.key_pressed[0]:
+			self.set_new_position_and_direction(Vector(0.0, -1.0), "up", 0)
+		if self.key_pressed[1]:
+			self.set_new_position_and_direction(Vector(0.0, 1.0), "down", math.pi)
+		if self.key_pressed[2]:
+			self.set_new_position_and_direction(Vector(1.0, 0.0), "left", math.pi/2)
+		if self.key_pressed[3]:	
+			self.set_new_position_and_direction(Vector(-1.0, 0.0), "right", -math.pi/2)
 
 	# funkcja odpowiedzialna za obsluge zdarzen
 	def process_event(self, event):
@@ -141,11 +161,10 @@ class Player:
 				self.current_position = Vector(randint(0,self.screen_size.x), randint(0,self.screen_size.y))
 				self.previous_position   = self.current_position
 	
-	
 		if event.type == pygame.KEYDOWN:
-			self.scan_event(event, True)
+			self.enable_key_pressed(event.scancode)
 		elif event.type == pygame.KEYUP:
-			self.scan_event(event, False)			
+			self.disable_key_pressed(event.scancode)			
 
 		
 	# funcja odpowiedzialna ze aktualizacje stanu/ ruch, kolor, kwiatki,
@@ -153,14 +172,7 @@ class Player:
 	def update(self, delta):				
 		self.previous_position = self.current_position
 
-		if self.pressed[0]:
-			self.keydown_event_handler(Vector(0.0, -1.0), "up", 0)
-		if self.pressed[1]:
-			self.keydown_event_handler(Vector(0.0, 1.0), "down", math.pi)
-		if self.pressed[2]:
-			self.keydown_event_handler(Vector(1.0, 0.0), "left", math.pi/2)
-		if self.pressed[3]:	
-			self.keydown_event_handler(Vector(-1.0, 0.0), "right", -math.pi/2)			
+		self.move_player()	
 		
 		if self.rotation_change :
 	#		self.relative_point.rotate(self.rotate_angle)

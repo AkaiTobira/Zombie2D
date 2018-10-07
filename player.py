@@ -62,7 +62,7 @@ class Player:
 
 	vertices = [(0,0), (0,0), (0,0)]
 
-	step   = 0.08
+	step   = 1.0
 	
 	current_position  = Vector(0,0)
 	previous_position = Vector(0,0)
@@ -106,6 +106,16 @@ class Player:
 			self.rotate_angle = angle
 			self.rotation_change = True
 
+	def scan_event(self, e, b):
+		if e.scancode == 75 or e.scancode == 30:
+			self.pressed[3] = b
+		if e.scancode == 77 or e.scancode == 32:
+			self.pressed[2] = b
+		if e.scancode == 72 or e.scancode == 17:
+			self.pressed[0] = b
+		if e.scancode == 80 or e.scancode == 31:
+			self.pressed[1] = b		
+
 	# funkcja odpowiedzialna za obsluge zdarzen
 	def process_event(self, event):
  	
@@ -133,23 +143,24 @@ class Player:
 	
 	
 		if event.type == pygame.KEYDOWN:
-			if event.scancode == 75 or event.scancode == 30:
-				self.keydown_event_handler(Vector(-1.0, 0.0), "right", -math.pi/2)
-				
-			if event.scancode == 77 or event.scancode == 32:
-				self.keydown_event_handler(Vector(1.0, 0.0), "left", math.pi/2)
-
-			if event.scancode == 72 or event.scancode == 17:
-				self.keydown_event_handler(Vector(0.0, -1.0), "up", 0)
-	
-			if event.scancode == 80 or event.scancode == 31:
-				self.keydown_event_handler(Vector(0.0, 1.0), "down", math.pi)
+			self.scan_event(event, True)
+		elif event.type == pygame.KEYUP:
+			self.scan_event(event, False)			
 
 		
 	# funcja odpowiedzialna ze aktualizacje stanu/ ruch, kolor, kwiatki,
 	# baranki .. i kucyki ... zawsze kucyki 
 	def update(self, delta):				
 		self.previous_position = self.current_position
+
+		if self.pressed[0]:
+			self.keydown_event_handler(Vector(0.0, -1.0), "up", 0)
+		if self.pressed[1]:
+			self.keydown_event_handler(Vector(0.0, 1.0), "down", math.pi)
+		if self.pressed[2]:
+			self.keydown_event_handler(Vector(1.0, 0.0), "left", math.pi/2)
+		if self.pressed[3]:	
+			self.keydown_event_handler(Vector(-1.0, 0.0), "right", -math.pi/2)			
 		
 		if self.rotation_change :
 	#		self.relative_point.rotate(self.rotate_angle)

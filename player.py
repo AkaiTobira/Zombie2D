@@ -14,12 +14,16 @@ class Player:
 	r      = 0.0
 	thick  = 0.0
 	color  = (0,0,0) # 255, 21, 82
-	current_screen = None
+	current_screen 	= None
 
 	pressed_left   	= False	
 	pressed_right   = False	
 	pressed_up   	= False	
 	pressed_down   	= False	
+
+	direction 		= "up"
+
+	vertices = [(0,0), (0,0), (0,0)]
 
 	step   = 0.08
 	
@@ -39,12 +43,37 @@ class Player:
 		self.current_screen 	= screen
 		self.thick				= thickness
 
+	# funkcja wyliczajaca wierzcholki trojkata rownobocznego
+	# ktory mozna przeskalowac i ktory skierowany jest w kierunku poruszania
+	def set_vertices(self, size):
+		if self.direction == "up":
+			self.vertices = [
+				(self.x,self.y-size*self.r),
+				(self.x-size*self.r,self.y+size*(self.r/2)),
+				(self.x+size*self.r,self.y+size*(self.r/2))]
+		elif self.direction == "down":
+			self.vertices = [
+				(self.x,self.y+size*self.r),
+				(self.x-size*self.r,self.y-size*(self.r/2)),
+				(self.x+size*self.r,self.y-size*(self.r/2))]				
+		elif self.direction == "left":
+			self.vertices = [
+				(self.x-size*self.r,self.y),
+				(self.x+size*(self.r/2),self.y-size*self.r),
+				(self.x+size*(self.r/2),self.y+size*self.r)]
+		elif self.direction == "right":
+			self.vertices = [
+				(self.x+size*self.r,self.y),
+				(self.x-size*(self.r/2),self.y-size*self.r),
+				(self.x-size*(self.r/2),self.y+size*self.r)]	
+
 	# funkcja odpowiedzialna za rysowanie [ current_screen to okno ]
 	def draw(self):
+		self.set_vertices(1)
 		pygame.draw.polygon (
 			self.current_screen,  
 			self.color, 
-			[(self.x,self.y-self.r),(self.x-self.r,self.y+(self.r/2)),(self.x+self.r,self.y+(self.r/2))], 
+			self.vertices, 
 			self.thick )
 		
 	# funkcja odpowiedzialna za obsluge zdarzen
@@ -80,15 +109,19 @@ class Player:
 
 		if self.pressed_left:
 			if(self.x > 12):
+				self.direction = "left"
 				self.x -= self.step
 		elif self.pressed_right:
 			if(self.x < 1012):
+				self.direction = "right"
 				self.x += self.step	
 		elif self.pressed_up:
 			if(self.y < 710):
+				self.direction = "down"
 				self.y += self.step	
 		elif self.pressed_down:
 			if(self.y > 12):
+				self.direction = "up"
 				self.y -= self.step							
 
 		self.previous_position = self.current_position

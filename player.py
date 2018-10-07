@@ -79,7 +79,7 @@ class Player:
 	# funkcja odpowiedzialna za obsluge zdarzen
 	def process_event(self, event):
 
-		elif event.type == pygame.KEYDOWN:
+		if event.type == pygame.KEYDOWN:
 			print(event)
 			if event.scancode == 75 or event.scancode == 30:
 				self.pressed_left = True	

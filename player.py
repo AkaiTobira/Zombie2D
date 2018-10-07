@@ -100,7 +100,8 @@ class Player:
 		
 
 	def set_direction(self, velocity, direction, angle): # nazwa do ustalenia
-		self.velocity = velocity
+		self.velocity += velocity
+		self.velocity = self.velocity.norm()
 		if self.direction != direction:
 			self.direction = direction
 			self.rotate_angle = angle

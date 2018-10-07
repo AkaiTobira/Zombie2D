@@ -1,6 +1,7 @@
 import pygame
 
 from vector import Vector
+from random import *
 
 class UnitManager:
 	entity_list = []
@@ -48,10 +49,15 @@ class MoveSystem:
 		self.player      = player
 
 	def update(self, delta):
-		for obj in self.entity_list:
-			obj.update(delta)
+		for unit in self.entity_list:
+			if unit.state == "Wait":
+				destination = Vector( randint(0,1024), randint(0, 600) )
+				velocity    = unit.current_position.distance_to(destination).norm()# * delta
+				unit.move_by(velocity, destination)
+			elif unit.state == "Move":
+				unit.update(delta)
+				
 
-		#print( self.player.x )
 
 	
 class CollisionSystem:

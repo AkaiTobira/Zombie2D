@@ -35,9 +35,6 @@ class ObjectsGenerator:
 	def generate_enemy(self):
 		for i in range(self.number_of_enemy):
 			self.object_list.append(Enemy(
-				get_color(Colors.LIGHT_BLUE),
-				6,
-				6, # dla pelnego zamalowania 6
 				self.screen,
 				Vector(1024,720)
 				)

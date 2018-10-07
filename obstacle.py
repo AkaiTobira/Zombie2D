@@ -4,6 +4,8 @@ from events import *
 
 class Obstacle:
 
+	state = "Const"
+
 	r     = 0.0
 	pos   = [0.0,0.0]
 	color = (0,0,0)

@@ -5,6 +5,15 @@ from random import *
 from colors import *
 
 class Enemy:
+	THICKNESS = 6
+	RADIUS    = 6
+	COLOR     = get_color(Colors.LIGHT_BLUE)
+	
+	current_screen = None
+	current_position  = Vector(0.0,0.0)
+	previous_position = Vector(0.0,0.0)
+	
+
 	id          = 1
 
 	destination = Vector(0.0,0.0)
@@ -12,44 +21,40 @@ class Enemy:
 	move        = Vector(1.0,1.0)
 	speed       = 3
 	
-	r           = 0.0
-	position    = Vector(0.0,0.0)
-	color       = (0,0,0)
-	thick       = 0.0
-	current_screen = None
 	screen_size = Vector(0,0)
 	
 	state       = "Wait"
 	
 	def __move(self, velocity ,delta):
-		self.position      += velocity
+		self.current_position      += velocity
 	
 	
-	def __init__(self, color , radius, thickness, screen, screen_size):
-		self.r     			= radius
-		self.color			= color
-		self.thick			= thickness
-		self.current_screen = screen
-		self.position       = Vector(randint(0,screen_size.x), randint(0,screen_size.y))
-		self.screen_size    = screen_size
-		self.destination    = self.position
-		self.distance       = Vector(0.0,0.0)
+	def __init__(self,  screen, screen_size):
+
+		self.current_screen   = screen
+		self.current_position = Vector(randint(0,screen_size.x), randint(0,screen_size.y))
+		self.previous_position= self.current_position
+		
+		self.screen_size      = screen_size
+		self.destination      = self.current_position
+		self.distance         = Vector(0.0,0.0)
 	
 	def draw(self):
-		pygame.draw.circle(self.current_screen, self.color, self.position.to_table(), self.r, self.thick )
-		pygame.draw.line(self.current_screen, get_color(Colors.RED),self.position.to_table(), self.destination.to_table() )
-		pygame.draw.line(self.current_screen, get_color(Colors.GREEN),self.position.to_table(),(self.position + self.distance.norm() * 20 * self.speed).to_table())
+		pygame.draw.circle(self.current_screen, self.COLOR, self.current_position.to_table(), self.RADIUS, self.THICKNESS )
+		pygame.draw.line(self.current_screen, get_color(Colors.RED),self.current_position.to_table(), self.destination.to_table() )
+		pygame.draw.line(self.current_screen, get_color(Colors.GREEN),self.current_position.to_table(),(self.current_position + self.distance.norm() * 20 * self.speed).to_table())
 		
 		
 	def process_event(self,event):
 	
-		if event.type == pygame.MOUSEBUTTONUP:
-			if event.button == 3:
-				self.state = "Move"
-				self.destination = Vector( randint(0,self.screen_size.x), randint(0,self.screen_size.y) )
-				self.distance = self.position.distance_to(self.destination)
 	
 		pass
+		
+	def move_by(self, velocity, destination):
+		self.state       = "Move"
+		self.destination = destination
+		self.distance    = self.current_position.distance_to(self.destination)
+		self.velocity    = velocity
 		
 	def __check_stop(self, left_distance):
 		stop = False
@@ -62,11 +67,11 @@ class Enemy:
 
 			if stop :
 				self.state = "Wait"
-				self.position = self.destination
+				self.current_position = self.destination
 		
 	def update(self, delta):
 			if self.state == "Move":
-				velocity = self.distance.norm() * self.speed
+				velocity = self.velocity * self.speed
 				left_distance = self.distance.abs() - velocity.abs()
 				self.distance -= velocity
 

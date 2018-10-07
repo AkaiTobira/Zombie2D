@@ -9,6 +9,12 @@ class Enemy:
 	RADIUS    = 6
 	COLOR     = get_color(Colors.LIGHT_BLUE)
 	
+	
+	start_distance    = Vector(0.0,0.0)
+	accumulate        = Vector(0.0,0.0)
+	start_position    = Vector(0.0,0.0) 
+	velocity_vector   = Vector(0.0,0.0)
+	
 	current_screen = None
 	current_position  = Vector(0.0,0.0)
 	previous_position = Vector(0.0,0.0)
@@ -43,17 +49,24 @@ class Enemy:
 		self.id               = id
 		
 		self.distance         = Vector(0.0,0.0)
+		self.accumulate        = Vector(0.0,0.0)
 	
 	
 	def draw(self):
+	
+		pygame.draw.line(self.current_screen, get_color(Colors.BLACK),self.start_position.to_table(), self.destination.to_table() )
+	
 		pygame.draw.circle(self.current_screen, self.COLOR, self.current_position.to_table(), self.RADIUS, self.THICKNESS )
 		
 		# draw destination
 		pygame.draw.line(self.current_screen, get_color(Colors.RED),self.current_position.to_table(), self.destination.to_table() )
 		
 		# draw velocity
-		pygame.draw.line(self.current_screen, get_color(Colors.GREEN),self.current_position.to_table(),(self.current_position + self.f + self.distance.norm() * 20 * self.speed).to_table())
-	
+		pygame.draw.line(self.current_screen, get_color(Colors.GREEN),self.current_position.to_table(),(self.current_position + self.f + self.distance.norm() ).to_table())
+
+		pygame.draw.line(self.current_screen, get_color(Colors.BLUE),self.current_position.to_table(),(self.current_position + self.velocity_vector ).to_table())
+
+		
 		# draw shorter ahead
 		#pygame.draw.line(self.current_screen, get_color(Colors.GREEN),self.current_position.to_table(),(self.seing_ahead).to_table())
 		# draw longer  ahead
@@ -82,6 +95,8 @@ class Enemy:
 		self.state            = "Wait"
 	
 	def move_to(self, destination):
+		self.start_position = self.current_position
+		self.start_distance = self.current_position.distance_to(self.destination)
 		self.state       = "Move"
 		self.destination = destination
 		self.velocity = self.current_position.distance_to(self.destination).norm() * self.speed
@@ -98,6 +113,14 @@ class Enemy:
 			if stop :
 				self.state = "Wait"
 				self.current_position = self.destination
+				self.accumulate = Vector(0.0,0.0)
+		
+	def accumulate(self):
+	
+		if self.current_position.distance_to(self.destination).len() <=  self.start_distance.len()/2:
+			self.accumulate +=  Vector(1,1)
+		else:
+			self.accumulate -=  Vector(1,1)
 		
 	def update(self, delta):
 			if self.state == "Move":
@@ -110,7 +133,9 @@ class Enemy:
 				
 	#			steeing.trunc(Vector(1,1))
 				
-				velocity = (self.velocity + steeing)
+				velocity = ((self.velocity + steeing) + self.accumulate * 10)
+			
+				self.velocity_vector = velocity * 10 
 			
 	#			self.seing_ahead = self.seing_ahead * (velocity.len() / self.speed)
 	#			self.seing_ahead_short = self.seing_ahead_short * (velocity.len() / self.speed)

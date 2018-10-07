@@ -99,14 +99,15 @@ class Player:
 			self.thick )
 		
 
-	def set_new_position_and_direction(self, offset, direction, angle): # nazwa do ustalenia
-		self.current_position += offset
+	def set_direction(self, velocity, direction, angle): # nazwa do ustalenia
+		self.velocity = velocity
 		if self.direction != direction:
 			self.direction = direction
 			self.rotate_angle = angle
 			self.rotation_change = True
 
 	def enable_key_pressed(self, scancode):
+	
 		if scancode == 75 or scancode == 30:
 			self.key_pressed[3] = True
 		if scancode == 77 or scancode == 32:
@@ -126,15 +127,15 @@ class Player:
 		if scancode == 80 or scancode == 31:
 			self.key_pressed[1] = False						
 
-	def move_player(self): # nazwa do ustalenia
+	def handle_direction_key_press(self): # nazwa do ustalenia
 		if self.key_pressed[0]:
-			self.set_new_position_and_direction(Vector(0.0, -1.0), "up", 0)
+			self.set_direction(Vector(0.0, -1.0), "up", 0)
 		if self.key_pressed[1]:
-			self.set_new_position_and_direction(Vector(0.0, 1.0), "down", math.pi)
+			self.set_direction(Vector(0.0, 1.0), "down", math.pi)
 		if self.key_pressed[2]:
-			self.set_new_position_and_direction(Vector(1.0, 0.0), "left", math.pi/2)
+			self.set_direction(Vector(1.0, 0.0), "left", math.pi/2)
 		if self.key_pressed[3]:	
-			self.set_new_position_and_direction(Vector(-1.0, 0.0), "right", -math.pi/2)
+			self.set_direction(Vector(-1.0, 0.0), "right", -math.pi/2)
 
 	# funkcja odpowiedzialna za obsluge zdarzen
 	def process_event(self, event):
@@ -164,15 +165,21 @@ class Player:
 		if event.type == pygame.KEYDOWN:
 			self.enable_key_pressed(event.scancode)
 		elif event.type == pygame.KEYUP:
-			self.disable_key_pressed(event.scancode)			
+			self.disable_key_pressed(event.scancode)	
+			self.velocity = Vector(0,0)
 
 		
 	# funcja odpowiedzialna ze aktualizacje stanu/ ruch, kolor, kwiatki,
 	# baranki .. i kucyki ... zawsze kucyki 
-	def update(self, delta):				
+	
+	def __move(self):
 		self.previous_position = self.current_position
+		self.current_position  += self.velocity
+	
+	def update(self, delta):				
+		self.__move()
 
-		self.move_player()	
+		self.handle_direction_key_press()	
 		
 		if self.rotation_change :
 	#		self.relative_point.rotate(self.rotate_angle)

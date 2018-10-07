@@ -56,10 +56,31 @@ class Player:
 	color  = (0,0,0)
 	current_screen 	= None
 
-	key_pressed     = { "up"   : False,            "down" : False,              "left" : False,              "right": False } 
-	rotations  	    = { "up"   : 0,                "down" : math.pi,            "left" : math.pi/2,          "right": -math.pi/2 }
-	possible_speeds = {"up"   : Vector( 0.0, -1.0),"down" : Vector( 0.0,  1.0), "left" : Vector( 1.0,  0.0), "right": Vector(-1.0,  0.0)}
-				   
+	key_pressed     = { "up"   : 
+						{ 
+							"enable"  : False,
+							"rotation": 0,
+							"velocity": Vector( 0.0, -1.0)
+						},
+						"down"   : 
+						{ 
+							"enable"  : False,
+							"rotation": math.pi,
+							"velocity": Vector( 0.0, 1.0)
+						},
+						"left"   : 
+						{ 
+							"enable"  : False,
+							"rotation": math.pi/2,
+							"velocity": Vector( 1.0, 0.0)
+						},
+						"right"   : 
+						{ 
+							"enable"  : False,
+							"rotation": -math.pi/2,
+							"velocity": Vector( -1.0, 0.0)
+						}
+					}
 	direction 		= "up"
 
 	vertices = [(0,0), (0,0), (0,0)]
@@ -121,15 +142,15 @@ class Player:
 			return  "down"	
 			
 	def enable_key_pressed(self, direction):
-		self.key_pressed[direction] = True
+		self.key_pressed[direction]["enable"] = True
 
 	def disable_key_pressed(self, direction):
-		self.key_pressed[direction] = False
+		self.key_pressed[direction]["enable"] = False
 
 	def handle_direction_key_press(self): # da się zrefaktorować ale przestanie się obracać
 		for key in self.key_pressed.keys():
-			if self.key_pressed[key]:
-				self.set_direction(self.possible_speeds[key], str(key), self.rotations[key])
+			if self.key_pressed[key]["enable"]:
+				self.set_direction(self.key_pressed[key]["velocity"], str(key), self.key_pressed[key]["rotation"])
 
 	# funkcja odpowiedzialna za obsluge zdarzen
 	def process_event(self, event):

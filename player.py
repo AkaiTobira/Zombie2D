@@ -56,26 +56,31 @@ class Player:
 	color  = (0,0,0)
 	current_screen 	= None
 
-	key_pressed     = { "up"   : 
+	key_pressed     = { 
+						"up"   : 
 						{ 
+							"scancode": [72, 17],
 							"enable"  : False,
 							"rotation": 0,
 							"velocity": Vector( 0.0, -1.0)
 						},
 						"down"   : 
 						{ 
+							"scancode": [80, 31],
 							"enable"  : False,
 							"rotation": math.pi,
 							"velocity": Vector( 0.0, 1.0)
 						},
 						"left"   : 
 						{ 
+							"scancode": [77, 32],
 							"enable"  : False,
 							"rotation": math.pi/2,
 							"velocity": Vector( 1.0, 0.0)
 						},
 						"right"   : 
 						{ 
+							"scancode": [75, 30],
 							"enable"  : False,
 							"rotation": -math.pi/2,
 							"velocity": Vector( -1.0, 0.0)
@@ -132,19 +137,17 @@ class Player:
 
 			
 	def scancode_to_direction(self, scancode): # to by się już dało tylko dziedziczeniem
-		if scancode == 75 or scancode == 30:
-			return "right"
-		if scancode == 77 or scancode == 32:
-			return "left"
-		if scancode == 72 or scancode == 17:
-			return  "up"
-		if scancode == 80 or scancode == 31:
-			return  "down"	
+		for key in self.key_pressed.keys():
+			if scancode in self.key_pressed[key]["scancode"]:
+				return str(key)
+		return None
 			
 	def enable_key_pressed(self, direction):
+		if direction == None: return
 		self.key_pressed[direction]["enable"] = True
 
 	def disable_key_pressed(self, direction):
+		if direction == None: return
 		self.key_pressed[direction]["enable"] = False
 
 	def handle_direction_key_press(self): # da się zrefaktorować ale przestanie się obracać

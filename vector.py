@@ -58,5 +58,13 @@ class Vector:
 			return Vector(0.0,0.0)
 		return self * (1/self.len())
 		
+	def rotate(self, angle, axis = None ):
+		if axis == None:
+			axis=Vector(0.0,0.0) 
+		return Vector(
+			(self.x - axis.x) * math.cos(angle) - (self.y - axis.y) * math.sin(angle) + axis.x,
+			(self.x - axis.x) * math.sin(angle) + (self.y - axis.y) * math.cos(angle) + axis.y
+			)
+		
 	def sign(self):
 		return Vector( 1 if self.x > 0 else 0 if self.x == 0 else -1, 1 if self.y > 0 else 0 if self.y == 0 else -1  )

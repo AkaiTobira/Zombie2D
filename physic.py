@@ -1,5 +1,7 @@
 import pygame
 
+from vector import Vector
+
 class UnitManager:
 	entity_list = []
 	
@@ -11,8 +13,8 @@ class UnitManager:
 	def __init__(self, units, player, screen):
 		self.entity_list      = units
 		self.screen           = screen
-		self.mv_system        = MoveSystem(units)
-		self.cl_system        = CollisionSystem(units)
+		self.mv_system        = MoveSystem(units, player)
+		self.cl_system        = CollisionSystem(units, player)
 		self.player           = player
 		
 	def draw(self):
@@ -29,10 +31,8 @@ class UnitManager:
 		pass
 		
 	def process_physic(self,delta):
-		for obj in self.entity_list:
-			obj.update(delta)
-			self.player.update(delta)
-		pass
+		self.mv_system.update(delta)
+		self.cl_system.update(delta)
 	
 	def add_unit(self,unit):
 		entity_list.append(unit)
@@ -40,12 +40,29 @@ class UnitManager:
 	
 	
 class MoveSystem:
-	def __init__(self, units):
-		pass
+	entity_list = []
+	player      = None
+	
+	def __init__(self, units, player):
+		self.entity_list = units
+		self.player      = player
+
+	def update(self, delta):
+		for obj in self.entity_list:
+			obj.update(delta)
+
+		#print( self.player.x )
 
 	
 class CollisionSystem:
-	def __init__(self, units):
-		pass
-	pass
+	entity_list = []
+	player      = None
 	
+	def __init__(self, units, player):
+		self.entity_list = units
+		self.player      = player
+	
+	def update(self, delta):
+		for obj in self.entity_list:
+			obj.update(delta)
+			self.player.update(delta)

@@ -1,7 +1,8 @@
 import pygame
 
 
-from obstacle import Obstacle as Ob 
+from obstacle  import Obstacle as Ob 
+from physic    import *
 from generator import *
 
 NUMBER_OF_ENEMIES   = 25
@@ -10,10 +11,11 @@ NUMBER_OF_OBSTACLES = 10
 START_POSITION      = [512,360]
 
 class Game:
-	screen    = None
-	generator = None
-	running   = True 
-	player    = None
+	screen      = None
+	generator   = None
+	unitManager = None
+	running     = True 
+	player      = None
 	
 	delta_time_ticks      = 0.0
 	delta_time_seconds    = 0.0
@@ -23,7 +25,7 @@ class Game:
 	def __init_screen_objects(self):
 		self.obj_on_screen = self.generator.create_objects()
 		self.player        = self.generator.get_spawned_player(START_POSITION)
-	
+		self.unitManager   = UnitManager(self.obj_on_screen,self.player, self.screen)
 	
 	def __init_pygame(self, resolution,name):
 		pygame.init()
@@ -41,20 +43,15 @@ class Game:
 		return self.running
 	
 	def draw(self):
-		self.screen.fill((20,30,47))
-		for obj in self.obj_on_screen:
-			obj.draw()
-		self.player.draw()
-		pygame.display.flip()
+		self.unitManager.draw()
 		
 	def process_input(self):
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				self.running = False
 				return
-			for obj in self.obj_on_screen:
-				obj.process_event(event)
-			self.player.process_event(event)
+			self.unitManager.process_input(event)
+			
 		
 	def __calculate_delta_time(self):
 		delta = pygame.time.get_ticks() - self.delta_time_ticks
@@ -64,6 +61,4 @@ class Game:
 		
 	def process_physic(self):
 		self.__calculate_delta_time()
-		for obj in self.obj_on_screen:
-			obj.update(self.delta_time_seconds)
-		self.player.update(self.delta_time_seconds)
+		self.unitManager.process_physic(self.delta_time_seconds)

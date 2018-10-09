@@ -4,6 +4,7 @@ import pygame
 from events import *
 # autorska biblioteka z vectorami
 from vector import Vector
+from random import *
 
 import math
 
@@ -170,15 +171,14 @@ class Player:
 	#		mouse_point    = (Vector(event.pos[0], event.pos[1])).norm()	
 	#		self.rotate_angle = face.angle_between( mouse_point ) 
 	#		self.rotation_change = True
-	#		self.rotation_change = True
 	#		pass
 	
 		if event.type == Events.COLLIDE:
 			self.current_position = event.where
 			
-			if event.stuck :
-				self.current_position = Vector(randint(0,self.screen_size.x), randint(0,self.screen_size.y))
-				self.previous_position   = self.current_position
+		#	if event.stuck :
+		#		self.current_position = Vector(randint(0,self.screen_size.x), randint(0,self.screen_size.y))
+		#		self.previous_position   = self.current_position
 	
 		if event.type == pygame.KEYDOWN:
 			self.enable_key_pressed(self.scancode_to_direction(event.scancode))

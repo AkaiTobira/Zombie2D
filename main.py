@@ -8,9 +8,6 @@ from game     import Game
 def main():
 
 	game = Game((1024,720), "Zombie2D")
-
-	#
-    # load and set the logo
     #logo = pygame.image.load("logo32x32.png")
     #pygame.display.set_icon(logo)
 	
@@ -20,9 +17,8 @@ def main():
 		game.process_physic()
 		game.process_input()
 		while (pygame.time.get_ticks() - fps )/1000 <= 1/60:
-			#print( ( fps - pygame.time.get_ticks())/1000  )
+			print((pygame.time.get_ticks() - fps )/1000)
 			sleep(0.0001)
-     
      
 if __name__=="__main__":
 	main()

@@ -12,11 +12,11 @@ class UnitManager:
 	mv_system   =  None
 	cl_system   =  None
 	
-	def __init__(self, units, player, screen):
+	def __init__(self, units, player, screen,screen_size):
 		self.entity_list      = units
 		self.screen           = screen
 		self.mv_system        = MoveSystem(units, player)
-		self.cl_system        = CollisionSystem(units, player)
+		self.cl_system        = CollisionSystem(units, player,screen_size)
 		self.player           = player
 		
 	def draw(self):
@@ -68,11 +68,19 @@ class MoveSystem:
 					return unit
 		return None
 
+
+	def __run_before_player_destination(self ):
+		destination = Vector( randint(0,1024), randint(0, 720) )
+
+		while destination.distance_to(self.player.current_position).len() < 300:
+			destination = Vector( randint(0,1024), randint(0, 720) )
+
+		return destination
 	
 	def update(self, delta):
 		for unit in self.entity_list:
 			if unit.state == "Wait":
-				destination = Vector( randint(0,1024), randint(0, 600) )
+				destination = self.__run_before_player_destination()
 				unit.move_to(destination)
 			elif unit.state == "Move":
 				
@@ -97,41 +105,49 @@ class MoveSystem:
 class CollisionSystem:
 	entity_list = []
 	player      = None
+	ZERO_VECTOR = Vector(0,0)
+	screen_size = Vector(0,0)
+	OFFSET      = 1
 	
-	def __init__(self, units, player):
+	def __init__(self, units, player, screen_size):
 		self.entity_list = units
 		self.player      = player
+		self.screen_size = Vector( screen_size[0], screen_size[1] ) 
 	
+	def __is_colliding(self, unit, unit_2, distance):
+		if unit == unit_2: return False
+		if distance > 60.0: return False
+		if distance <= math.fabs( unit.RADIUS + unit_2.RADIUS + self.OFFSET ) : return True
+
+	def __is_stuck(self, unit, unit_2, distance):
+		if distance <= math.fabs(unit_2.RADIUS - unit.RADIUS + self.OFFSET): return True
+		return False
+
+	def __detect_collision_with_unit(self, unit):
+		for unit_2 in self.entity_list:
+			distance = ( unit.current_position + unit.velocity ).distance_to(unit_2.current_position + unit_2.velocity).len()
+			if self.__is_colliding(unit,unit_2,distance):
+				self.__send_collision_message(unit, unit_2, self.__is_stuck(unit,unit_2,distance))
+				if not unit_2.velocity.is_zero_len():
+					self.__send_collision_message( unit_2, unit, self.__is_stuck(unit_2,unit,distance))
+
+	def __send_collision_message(self, unit, unit_2, is_stuck):
+		rise_event(Events.COLLIDE, { "who" : unit.id, "stuck" : is_stuck, "with" : unit_2.id, "where" : unit.current_position - unit.velocity  } )
+
+	def __detect_collision_with_wall(self, unit):
+		if (unit.current_position + unit.velocity).is_behind( self.ZERO_VECTOR ) or not (unit.current_position + unit.velocity).is_behind( self.screen_size ):
+			rise_event(Events.COLLIDE, { "who" : unit.id, "stuck" : False, "with" : -1, "where" : unit.current_position - unit.velocity  } )
+
+	def __detect_collision_for_player(self):
+		self.__detect_collision_with_unit(self.player)
+		self.__detect_collision_with_wall(self.player)
+
+	def __detect_collision_for_enemies(self):
+		for unit in self.entity_list:
+			if not unit.velocity.is_zero_len():
+				self.__detect_collision_with_unit(unit)
+				self.__detect_collision_with_wall(unit)
+
 	def update(self, delta):
-		
-		for unit in self.entity_list:
-			if unit.state == "Move":
-				for unit_2 in self.entity_list:
-					if unit == unit_2 : 
-						continue
-					distance = ( unit.current_position + unit.velocity ).distance_to(unit_2.current_position + unit_2.velocity)
-					if distance.len() > 60.0:
-						continue
-					offset = 1
-					if distance.len() <= math.fabs( unit.RADIUS + unit_2.RADIUS + offset ) :
-						if distance.len() <= math.fabs(unit_2.RADIUS - unit.RADIUS + offset):
-							rise_event( Events.COLLIDE,  { "who" : unit.id, "stuck" : True,"with" : unit_2.id, "where" : unit.current_position - unit.velocity } )
-						else:
-							rise_event(Events.COLLIDE, { "who" : unit.id, "stuck" : False, "with" : unit_2.id, "where" : unit.current_position - unit.velocity  } )
-							if unit_2.state == "Move":
-								rise_event(Events.COLLIDE, { "who" : unit_2.id, "stuck" : False, "with" : unit.id, "where" : unit_2.current_position - unit_2.velocity  } )
-							pass
-							
-		for unit in self.entity_list:
-			if unit.state == "Move":
-				distance = ( unit.current_position + unit.velocity ).distance_to(self.player.current_position + self.player.velocity)
-				if distance.len() > 60.0:
-					continue
-				offset = 1
-				if distance.len() <= math.fabs( unit.RADIUS + self.player.RADIUS + offset ) :
-					if distance.len() <= math.fabs(self.player.RADIUS - unit.RADIUS + offset):
-						rise_event( Events.COLLIDE,  { "who" : unit.id, "stuck" : True,"with" : self.player.id, "where" : unit.current_position - unit.velocity } )
-					else:
-						rise_event(Events.COLLIDE, { "who" : unit.id, "stuck" : False, "with" : self.player.id, "where" : unit.current_position - unit.velocity  } )
-						if not self.player.velocity.is_zero_len():
-							rise_event(Events.COLLIDE, { "who" : self.player.id, "stuck" : False, "with" : unit.id, "where" : self.player.current_position - self.player.velocity  } )
+		self.__detect_collision_for_player()
+		self.__detect_collision_for_enemies()

@@ -22,10 +22,10 @@ class Game:
 	
 	obj_on_screen = []
 	
-	def __init_screen_objects(self):
+	def __init_screen_objects(self,resolution):
 		self.obj_on_screen = self.generator.create_objects()
 		self.player        = self.generator.get_spawned_player(START_POSITION)
-		self.unitManager   = UnitManager(self.obj_on_screen,self.player, self.screen)
+		self.unitManager   = UnitManager(self.obj_on_screen,self.player, self.screen, resolution)
 	
 	def __init_pygame(self, resolution,name):
 		pygame.init()
@@ -37,7 +37,7 @@ class Game:
 		self.__init_pygame(resolution,name)
 		self.running  = True
 		self.generator     = ObjectsGenerator(self.screen, NUMBER_OF_ENEMIES, NUMBER_OF_OBSTACLES)
-		self.__init_screen_objects()
+		self.__init_screen_objects(resolution)
 
 	def is_running(self):
 		return self.running

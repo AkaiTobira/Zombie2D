@@ -6,7 +6,8 @@ from random import randint
 from events import Events, rise_event
 
 class UnitManager:
-	entity_list = []
+	obstacle_list = []
+	enemy_list    = []
 	
 
 	zombie_counter = 0
@@ -16,9 +17,9 @@ class UnitManager:
 	cl_system      = None
 	
 	def __init__(self, units, player, screen,screen_size):
-		self.entity_list      = units
-		for unit in units:
-			if unit.state != "Const": self.zombie_counter += 1
+		self.enemy_list       = units[0]
+		self.obstacle_list    = units[1]
+		self.zombie_counter   = len(self.enemy_list)
 		self.screen           = screen
 		self.mv_system        = MoveSystem(units, player)
 		self.cl_system        = CollisionSystem(units, player,screen_size)
@@ -26,7 +27,7 @@ class UnitManager:
 		
 	def draw(self):
 		self.screen.fill((20,30,47))
-		for obj in self.entity_list:
+		for obj in ( self.enemy_list + self.obstacle_list ):
 			obj.draw()
 		self.player.draw()
 		pygame.display.flip()
@@ -37,12 +38,12 @@ class UnitManager:
 			if event.who == 0:
 				self.player.process_event(event)
 				return 
-			for unit in self.entity_list:
+			for unit in self.enemy_list:
 				if unit.id == event.who:
 					unit.process_event(event)
 					return
 					
-		for obj in self.entity_list:
+		for obj in self.enemy_list:
 			obj.process_event(event)
 			self.player.process_event(event)
 		pass
@@ -53,7 +54,7 @@ class UnitManager:
 
 	def add_unit(self,unit):
 		self.zombie_counter += 1
-		self.entity_list.append(unit)
+		self.enemy_list.append(unit)
 
 	def has_more_zombie(self):
 		return self.zombie_counter != 0
@@ -69,7 +70,7 @@ class MoveSystem:
 	player      = None
 	
 	def __init__(self, units, player):
-		self.entity_list = units
+		self.entity_list =  units[0] + units[1] 
 		self.player      = player
 
 	def __line_intersect(self, position):
@@ -116,14 +117,16 @@ class MoveSystem:
 		self.player.update(delta)
 					
 class CollisionSystem:
-	entity_list = []
+	enemy_list    = []
+	obstacle_list = []
 	player      = None
 	ZERO_VECTOR = Vector(0,0)
 	screen_size = Vector(0,0)
 	OFFSET      = 1
 	
 	def __init__(self, units, player, screen_size):
-		self.entity_list = units
+		self.enemy_list =  units[0] 
+		self.obstacle_list = units[1] 
 		self.player      = player
 		self.screen_size = Vector( screen_size[0], screen_size[1] ) 
 	
@@ -136,8 +139,14 @@ class CollisionSystem:
 		if distance <= math.fabs(unit_2.RADIUS - unit.RADIUS + self.OFFSET): return True
 		return False
 
+	def __detect_collision_with_obstacle(self, unit):
+		for unit_2 in self.obstacle_list:
+			distance = ( unit.current_position + unit.velocity ).distance_to(unit_2.current_position + unit_2.velocity).len()
+			if self.__is_colliding(unit,unit_2,distance):
+				self.__send_collision_message(unit, unit_2, self.__is_stuck(unit,unit_2,distance))
+
 	def __detect_collision_with_unit(self, unit):
-		for unit_2 in self.entity_list:
+		for unit_2 in self.enemy_list:
 			distance = ( unit.current_position + unit.velocity ).distance_to(unit_2.current_position + unit_2.velocity).len()
 			if self.__is_colliding(unit,unit_2,distance):
 				self.__send_collision_message(unit, unit_2, self.__is_stuck(unit,unit_2,distance))
@@ -152,13 +161,15 @@ class CollisionSystem:
 			rise_event(Events.COLLIDE, { "who" : unit.id, "stuck" : False, "with" : -1, "where" : unit.current_position - unit.velocity  } )
 
 	def __detect_collision_for_player(self):
+		self.__detect_collision_with_obstacle(self.player)
 		self.__detect_collision_with_unit(self.player)
 		self.__detect_collision_with_wall(self.player)
 
 	def __detect_collision_for_enemies(self):
-		for unit in self.entity_list:
+		for unit in self.enemy_list:
 			if not unit.velocity.is_zero_len():
 				self.__detect_collision_with_unit(unit)
+				self.__detect_collision_with_obstacle(unit)
 	#			self.__detect_collision_with_wall(unit)
 
 	def update(self, delta):

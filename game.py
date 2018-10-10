@@ -37,7 +37,7 @@ class Game:
 	def __init__(self, resolution, name):
 		self.__init_pygame(resolution,name)
 		self.running  = True
-		self.generator     = ObjectsGenerator(self.screen, NUMBER_OF_ENEMIES, NUMBER_OF_OBSTACLES)
+		self.generator     = ObjectsGenerator(self.screen, NUMBER_OF_ENEMIES, NUMBER_OF_OBSTACLES,Vector(resolution[0],resolution[1]))
 		self.__init_screen_objects(resolution)
 
 	def is_running(self):

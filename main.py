@@ -1,8 +1,7 @@
 import pygame
  
  
-from time import sleep
-
+from time     import sleep
 from game     import Game 
  
 def main():

@@ -16,9 +16,9 @@ def main():
 		game.draw()
 		game.process_physic()
 		game.process_input()
-		while (pygame.time.get_ticks() - fps )/1000 <= 1/60:
-			print((pygame.time.get_ticks() - fps )/1000)
-			sleep(0.0001)
+	#	while (pygame.time.get_ticks() - fps )/1000 <= 1/60:
+	#		print((pygame.time.get_ticks() - fps )/1000)
+	#		sleep(0.0001)
      
 if __name__=="__main__":
 	main()

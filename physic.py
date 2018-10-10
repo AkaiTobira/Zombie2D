@@ -7,13 +7,17 @@ from events import *
 class UnitManager:
 	entity_list = []
 	
-	player      = None
-	screen      = None 
-	mv_system   =  None
-	cl_system   =  None
+
+	zombie_counter = 0
+	player         = None
+	screen         = None 
+	mv_system      = None
+	cl_system      = None
 	
 	def __init__(self, units, player, screen,screen_size):
 		self.entity_list      = units
+		for unit in units:
+			if unit.state != "Const": self.zombie_counter += 1
 		self.screen           = screen
 		self.mv_system        = MoveSystem(units, player)
 		self.cl_system        = CollisionSystem(units, player,screen_size)
@@ -46,11 +50,17 @@ class UnitManager:
 		self.mv_system.update(delta)
 		self.cl_system.update(delta)
 
-
-	
 	def add_unit(self,unit):
+		self.zombie_counter += 1
 		entity_list.append(unit)
-		
+
+	def has_more_zombie(self):
+		return self.zombie_counter != 0
+
+	def remove_unit(self,unit):
+		self.zombie_counter -= 1
+#		entity_list.remove
+		pass		
 	
 	
 class MoveSystem:

@@ -1,8 +1,9 @@
 import pygame
 
-from events import *
-from random import *
-from colors import *
+from events import Events, rise_event
+from random import randint
+from colors import Colors, get_color
+from vector import Vector
 
 class Enemy:
 	THICKNESS = 6
@@ -13,7 +14,7 @@ class Enemy:
 	start_distance    = Vector(0.0,0.0)
 	accumulate        = Vector(0.0,0.0)
 	start_position    = Vector(0.0,0.0) 
-	velocity_vector   = Vector(0.0,0.0)
+	velocity          = Vector(0.0,0.0)
 	
 	current_screen = None
 	current_position  = Vector(0.0,0.0)
@@ -64,7 +65,7 @@ class Enemy:
 		# draw velocity
 		pygame.draw.line(self.current_screen, get_color(Colors.GREEN),self.current_position.to_table(),(self.current_position + self.f + self.distance.norm() ).to_table())
 
-		pygame.draw.line(self.current_screen, get_color(Colors.BLUE),self.current_position.to_table(),(self.current_position + self.velocity_vector ).to_table())
+		pygame.draw.line(self.current_screen, get_color(Colors.BLUE),self.current_position.to_table(),(self.current_position + self.velocity ).to_table())
 
 		
 		# draw shorter ahead
@@ -115,7 +116,7 @@ class Enemy:
 				self.current_position = self.destination
 				self.accumulate = Vector(0.0,0.0)
 		
-	def accumulate(self):
+	def __accumulate(self):
 	
 		if self.current_position.distance_to(self.destination).len() <=  self.start_distance.len()/2:
 			self.accumulate +=  Vector(1,1)

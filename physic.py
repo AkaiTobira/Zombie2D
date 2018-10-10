@@ -1,8 +1,9 @@
 import pygame
+import math
 
 from vector import Vector
-from random import *
-from events import *
+from random import randint
+from events import Events, rise_event
 
 class UnitManager:
 	entity_list = []
@@ -52,7 +53,7 @@ class UnitManager:
 
 	def add_unit(self,unit):
 		self.zombie_counter += 1
-		entity_list.append(unit)
+		self.entity_list.append(unit)
 
 	def has_more_zombie(self):
 		return self.zombie_counter != 0
@@ -90,8 +91,10 @@ class MoveSystem:
 	def update(self, delta):
 		for unit in self.entity_list:
 			if unit.state == "Wait":
-				destination = self.__run_before_player_destination()
-				unit.move_to(destination)
+
+				if randint(0,500) < 25 :
+					destination = self.__run_before_player_destination()
+					unit.move_to(destination)
 			elif unit.state == "Move":
 				
 				unit_far   = self.__line_intersect( unit.seing_ahead )   
@@ -156,7 +159,7 @@ class CollisionSystem:
 		for unit in self.entity_list:
 			if not unit.velocity.is_zero_len():
 				self.__detect_collision_with_unit(unit)
-				self.__detect_collision_with_wall(unit)
+	#			self.__detect_collision_with_wall(unit)
 
 	def update(self, delta):
 		self.__detect_collision_for_player()

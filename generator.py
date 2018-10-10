@@ -1,11 +1,11 @@
 import pygame
 
-from random   import randint
-from events   import *
-from obstacle import *
-from player   import *
-from enemy    import *
-from colors   import *
+from random   import randint,random
+from obstacle import Obstacle
+from player   import Player
+from enemy    import Enemy
+from colors   import Colors, get_color
+from vector   import Vector
 
 def generate_random_color():
 	return ( generate_int(0,255),generate_int(0,255),generate_int(0,255) )

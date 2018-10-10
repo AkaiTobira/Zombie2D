@@ -1,10 +1,10 @@
 import pygame
 
 # biblioteka ze zdarzeniami : jst opis jak uzywac
-from events import *
+from events import Events, rise_event
 # autorska biblioteka z vectorami
 from vector import Vector
-from random import *
+from random import randint
 
 import math
 

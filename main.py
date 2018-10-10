@@ -12,7 +12,7 @@ def main():
     #pygame.display.set_icon(logo)
 	
 	while game.is_running():
-		fps = pygame.time.get_ticks()
+	#	fps = pygame.time.get_ticks()
 		game.draw()
 		game.process_physic()
 		game.process_input()

@@ -1,9 +1,6 @@
 import pygame
 
-from vector import *
 from enum import IntEnum
-
-
 
 # jak uzywac :
 # Dopisac kolejny event do Enuma Events 

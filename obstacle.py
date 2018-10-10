@@ -1,8 +1,9 @@
 import pygame
 
-from events import *
+from events   import Events
 from random   import randint
-from colors   import *
+from vector   import Vector
+from colors   import Colors, get_color
 
 class Obstacle:
 	RADIUS = 0

@@ -54,7 +54,6 @@ class Vector:
 		return Vector(math.fabs(self.x), math.fabs(self.y))
 		
 	def angle_between(self,v):
-		#return math.acos( self.dot(v) * ( 1.0 / ( v.len() + self.len())))
 		return (math.atan2(v.y, v.x) - math.atan2(self.y, self.x))
 		
 	def is_zero_len(self):

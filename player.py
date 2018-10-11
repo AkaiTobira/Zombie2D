@@ -10,11 +10,11 @@ from colors import Colors, get_color
 import math
 
 class Triangle:
-	vertices = [ Vector(0.0,0.0), Vector(0.0,0.0), Vector(0.0,0.0) ] # polowki wektorow
+	vertices = [ Vector(0.0,0.0), Vector(0.0,0.0), Vector(0.0,0.0) ]
 	basic    = [] 
 	
 	def __init__(self, size):
-		self.vertices = [Vector(0.0, -1.0)*size, Vector(-1.0, 1.0)*size, Vector(1.0, 1.0)*size]
+		self.vertices = [Vector(0.0,-1.0)*size, Vector(-1.0,1.0)*size, Vector(1.0,1.0)*size]
 		self.basic = self.vertices.copy()
 		
 	def rotate(self, angle):
@@ -146,13 +146,9 @@ class Player:
 	def process_event(self, event):
  	
 		if event.type == pygame.MOUSEMOTION :
-			self.mouse_point    = (Vector(event.pos[0], event.pos[1]))
-			self.mouse_vec		= Vector(
-				self.mouse_point.x - self.current_position.x,
-				self.mouse_point.y - self.current_position.y)    
-			face_vec = Vector(
-				self.face.x - self.current_position.x,
-				self.face.y - self.current_position.y)
+			self.mouse_point = (Vector(event.pos[0], event.pos[1]))
+			self.mouse_vec = self.mouse_point - self.current_position   
+			face_vec = self.face - self.current_position
 			self.rotate_angle = face_vec.norm().angle_between( self.mouse_vec.norm() ) 
 			#print ("rotate angle: " + str(round(self.rotate_angle * 180 / math.pi)) )
 			self.rotation_change = True

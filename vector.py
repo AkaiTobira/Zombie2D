@@ -42,8 +42,8 @@ class Vector:
 		return self.__mul__(v)
 			
 	def dot(self,v):
-		return self.x* v.x + self.y *v.y
-		
+		return self.x * v.x + self.y * v.y
+
 	def len(self):
 		return math.sqrt(self.x**2 + self.y**2)
 		
@@ -54,7 +54,8 @@ class Vector:
 		return Vector(math.fabs(self.x), math.fabs(self.y))
 		
 	def angle_between(self,v):
-		return math.acos( self.dot(v) * ( 1.0 / ( v.len() + self.len() )  ))
+		#return math.acos( self.dot(v) * ( 1.0 / ( v.len() + self.len())))
+		return (math.atan2(v.y, v.x) - math.atan2(self.y, self.x))
 		
 	def is_zero_len(self):
 		return self.x == 0.0 and self.y == 0.0

@@ -28,7 +28,7 @@ class ObjectsGenerator:
 			self.id_counter += 1
 	
 	def get_spawned_player(self, position):
-		return Player(get_color(Colors.LIGHT_RED), 512, 360, 10, 3, self.screen)
+		return Player(position, self.screen)
 		
 	def generate_obstacles(self):	
 		for i in range(self.number_of_obstacles):

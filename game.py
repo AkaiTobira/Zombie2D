@@ -9,7 +9,7 @@ from generator import ObjectsGenerator
 NUMBER_OF_ENEMIES   = 30
 NUMBER_OF_OBSTACLES = 20
 
-START_POSITION      = [512,360]
+START_POSITION      = Vector(512,360)
 
 class Game:
 	screen      = None

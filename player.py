@@ -5,31 +5,19 @@ from events import Events, rise_event
 # autorska biblioteka z vectorami
 from vector import Vector
 from random import randint
+from colors import Colors, get_color
 
 import math
 
 class Triangle:
-	vertices = [ Vector(0.0,0.0), Vector(0.0,0.0), Vector(0.0,0.0) ]
+	vertices = [ Vector(0.0,0.0), Vector(0.0,0.0), Vector(0.0,0.0) ] # polowki wektorow
 	basic    = [] 
 	
 	def __init__(self, size):
-		
-		half_of_size = (0.5 * size)
-	
-		self.vertices[0].x = 0.0
-		self.vertices[0].y = -half_of_size
-		
-		self.vertices[1].x = -half_of_size
-		self.vertices[1].y = half_of_size
-		
-		self.vertices[2].x = half_of_size 
-		self.vertices[2].y = half_of_size
-		
+		self.vertices = [Vector(0.0, -1.0)*size, Vector(-1.0, 1.0)*size, Vector(1.0, 1.0)*size]
 		self.basic = self.vertices.copy()
 		
 	def rotate(self, angle):
-		#print( self.basic )
-	
 		for i in range(len(self.vertices)):
 			self.vertices[i] = self.basic[i].rotate(angle)
 		
@@ -46,16 +34,12 @@ class Triangle:
 # taka samą nazwą i iloscia argumntów
 class Player:
 
-	RADIUS = 10
-	id = 0
-
-	# pola klasy
-	x 	   = 0.0
-	y 	   = 0.0
-	r      = 0.0
-	thick  = 0.0
-	color  = (0,0,0)
+	id     			= 0
+	THICK  			= 3
+	RADIUS			= 10
+	COLOR  			= get_color(Colors.LIGHT_RED)
 	current_screen 	= None
+	direction 		= "up"
 
 	key_pressed     = { 
 						"up"   : 
@@ -63,40 +47,38 @@ class Player:
 							"scancode": [72, 17],
 							"enable"  : False,
 							"rotation": 0,
-							"velocity": Vector( 0.0, -1.0)
+							"velocity": Vector(0.0, -1.0)
 						},
 						"down"   : 
 						{ 
 							"scancode": [80, 31],
 							"enable"  : False,
 							"rotation": math.pi,
-							"velocity": Vector( 0.0, 1.0)
+							"velocity": Vector(0.0, 1.0)
 						},
 						"left"   : 
 						{ 
 							"scancode": [77, 32],
 							"enable"  : False,
 							"rotation": math.pi/2,
-							"velocity": Vector( 1.0, 0.0)
+							"velocity": Vector(1.0, 0.0)
 						},
 						"right"   : 
 						{ 
 							"scancode": [75, 30],
 							"enable"  : False,
 							"rotation": -math.pi/2,
-							"velocity": Vector( -1.0, 0.0)
+							"velocity": Vector(-1.0, 0.0)
 						}
 					}
-	direction 		= "up"
 
-	vertices = [(0,0), (0,0), (0,0)]
 
-	step   = 1.0
-	
 	current_position  = Vector(0,0)
 	previous_position = Vector(0,0)
-	relative_point    = Vector(0,0)
 	velocity          = Vector(0,0)
+	face              = Vector(0,0)
+	mouse_point       = Vector(0,0)
+	mouse_vec 		  = Vector(0,0)
 	
 	graphic = Triangle(0)
 	
@@ -104,28 +86,33 @@ class Player:
 	rotation_change = False
 	
 	# Construktor 
-	def __init__(self, color, pos_x, pos_y, radius, thickness, screen):
-		self.graphic            = Triangle( 20 )
-		self.r     			   	= radius
-		# for collisions
-		self.current_position  	= Vector(pos_x, pos_y)
-		self.previous_position 	= Vector(pos_x, pos_y)
-		self.relative_point     = Vector(
-			self.current_position.x, self.current_position.y + 1).norm()
-		self.x 					= pos_x
-		self.y 					= pos_y
-		self.color				= color
+	def __init__(self, position, screen):
+		self.graphic            = Triangle( 10 )
+		self.current_position  	= position
+		self.previous_position 	= position
 		self.current_screen 	= screen
-		self.thick				= thickness
 
 				
 	# funkcja odpowiedzialna za rysowanie [ current_screen to okno ]
 	def draw(self):
 		pygame.draw.polygon (
 			self.current_screen,  
-			self.color, 
+			self.COLOR, 
 			self.graphic.to_draw(self.current_position), 
-			self.thick )
+			self.THICK )
+
+		self.face = Vector(
+			self.current_position.x,
+			self.current_position.y - 200)
+		# linia od gracza pionowo do gory	
+		#pygame.draw.line(self.current_screen, get_color(Colors.YELLOW),self.current_position.to_table(), self.face.to_table())
+
+		 # linia od gracza do kursora myszy
+		pygame.draw.line(self.current_screen, get_color(Colors.YELLOW),self.current_position.to_table(), self.mouse_point.to_table())
+
+		# kursor myszy - okrag
+		pygame.draw.circle(self.current_screen, get_color(Colors.YELLOW), self.mouse_point.to_table(), 10, 2)
+		
 		
 
 	def set_direction(self, velocity, direction, angle): # nazwa do ustalenia
@@ -133,7 +120,6 @@ class Player:
 		self.velocity = self.velocity.norm()
 		if self.direction != direction:
 			self.direction = direction
-			self.rotate_angle = angle
 			self.rotation_change = True
 
 			
@@ -159,26 +145,25 @@ class Player:
 	# funkcja odpowiedzialna za obsluge zdarzen
 	def process_event(self, event):
  	
-	# Za myszką ale ciągle nie gotowe :/ problem jest w obliczaniu kąta pomniedzy dwoma wektorami
-	# Jeden jest wyznaczony przez połozenie myszki, a drugi nie wiem :)
-	# Matematyka na wektorach :)  btw => nie dobałem wartości poniżej nie chciało mi się
-	# Jakby trzeba było to masz biblioteke operacji na wektorach ... moją ale zawsze coś, i zawsze
-	# można coś brakującego dopisać
-	
-	
-	#	if event.type == pygame.MOUSEMOTION :
-	#		face           = Vector(1,0).norm()
-	#		mouse_point    = (Vector(event.pos[0], event.pos[1])).norm()	
-	#		self.rotate_angle = face.angle_between( mouse_point ) 
-	#		self.rotation_change = True
-	#		pass
+		if event.type == pygame.MOUSEMOTION :
+			self.mouse_point    = (Vector(event.pos[0], event.pos[1]))
+			self.mouse_vec		= Vector(
+				self.mouse_point.x - self.current_position.x,
+				self.mouse_point.y - self.current_position.y)    
+			face_vec = Vector(
+				self.face.x - self.current_position.x,
+				self.face.y - self.current_position.y)
+			self.rotate_angle = face_vec.norm().angle_between( self.mouse_vec.norm() ) 
+			#print ("rotate angle: " + str(round(self.rotate_angle * 180 / math.pi)) )
+			self.rotation_change = True
+			pass
 	
 		if event.type == Events.COLLIDE:
 			self.current_position = event.where
 			
-		#	if event.stuck :
-		#		self.current_position = Vector(randint(0,self.screen_size.x), randint(0,self.screen_size.y))
-		#		self.previous_position   = self.current_position
+			if event.stuck :
+				self.current_position = Vector(randint(0,self.screen_size.x), randint(0,self.screen_size.y))
+				self.previous_position   = self.current_position
 	
 		if event.type == pygame.KEYDOWN:
 			self.enable_key_pressed(self.scancode_to_direction(event.scancode))
@@ -187,9 +172,7 @@ class Player:
 			self.velocity = Vector(0,0)
 
 		
-	# funcja odpowiedzialna ze aktualizacje stanu/ ruch, kolor, kwiatki,
-	# baranki .. i kucyki ... zawsze kucyki 
-	
+	# funcja odpowiedzialna ze aktualizacje stanu/ ruch, kolor
 	def __move(self):
 		self.previous_position = self.current_position
 		self.current_position  += self.velocity
@@ -200,7 +183,6 @@ class Player:
 		self.handle_direction_key_press()	
 		
 		if self.rotation_change :
-	#		self.relative_point.rotate(self.rotate_angle)
 			self.graphic.rotate(self.rotate_angle)
 			self.rotation_change = False
 

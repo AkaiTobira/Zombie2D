@@ -8,7 +8,7 @@ from colors import Colors, get_color
 import math
 
 class Triangle:
-	vertices = [ Vector(0.0,0.0), Vector(0.0,0.0), Vector(0.0,0.0) ]
+	vertices = []
 	basic    = [] 
 	
 	def __init__(self, size):
@@ -23,6 +23,20 @@ class Triangle:
 		return [ (position + self.vertices[0]).to_touple(),
 				 (position + self.vertices[1]).to_touple(),
 				 (position + self.vertices[2]).to_touple()]
+
+class Cursor:
+	position  = 0.0
+	COLOR     = get_color(Colors.YELLOW)	
+	RADIUS	  = 12	
+	THICK	  = 1	
+
+	def __init__(self, position):
+		self.position = position
+
+	def draw(self, screen, mouse_point):
+		pygame.draw.circle(screen, self.COLOR, mouse_point.to_table(), self.RADIUS, self.THICK)
+		pygame.draw.line(screen, self.COLOR, Vector(mouse_point.x-self.RADIUS, mouse_point.y).to_table(), Vector(mouse_point.x+self.RADIUS, mouse_point.y).to_table(), self.THICK)
+		pygame.draw.line(screen, self.COLOR, Vector(mouse_point.x, mouse_point.y-self.RADIUS).to_table(), Vector(mouse_point.x, mouse_point.y+self.RADIUS).to_table(), self.THICK)
 
 class PlayerMoveBehavior:
 
@@ -141,6 +155,7 @@ class Player:
 	current_screen 	  = None
 	move_behavior	  = None
 	rotate_behavior   = None
+	cursor	 		  = None
 
 	current_position  = Vector(0,0)
 	previous_position = Vector(0,0)
@@ -156,12 +171,10 @@ class Player:
 		self.current_screen 	= screen
 		self.move_behavior 		= PlayerMoveBehavior(position)
 		self.rotate_behavior	= PlayerRotateBehavior(position)
+		self.cursor				= Cursor(position)
 
 	def draw_line_to_cursor(self):
 		pygame.draw.line(self.current_screen, get_color(Colors.YELLOW), self.current_position.to_table(), self.mouse_point.to_table())
-
-	def draw_cursor(self):
-		pygame.draw.circle(self.current_screen, get_color(Colors.YELLOW), self.mouse_point.to_table(), 10, 2)
 
 	def draw(self):
 		pygame.draw.polygon (
@@ -170,8 +183,8 @@ class Player:
 			self.graphic.to_draw(self.current_position), 
 			self.THICK )
 
-		self.draw_line_to_cursor()
-		self.draw_cursor()	
+		#self.draw_line_to_cursor()
+		self.cursor.draw(self.current_screen, self.mouse_point)
 
 	def process_event(self, event):
 		if event.type == Events.COLLIDE:

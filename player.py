@@ -1,8 +1,6 @@
 import pygame
 
-# biblioteka ze zdarzeniami : jst opis jak uzywac
 from events import Events, rise_event
-# autorska biblioteka z vectorami
 from vector import Vector
 from random import randint
 from colors import Colors, get_color
@@ -22,13 +20,11 @@ class Triangle:
 			self.vertices[i] = self.basic[i].rotate(angle)
 		
 	def to_draw(self, position):
-	
 		return [ (position + self.vertices[0]).to_touple(),
 				 (position + self.vertices[1]).to_touple(),
-				 (position + self.vertices[2]).to_touple()
-			]
-	
-class Player_move:
+				 (position + self.vertices[2]).to_touple()]
+
+class PlayerMoveBehavior:
 
 	position  		= Vector(0,0)
 	velocity  		= Vector(0,0)	
@@ -104,7 +100,7 @@ class Player_move:
 		return self.position
 
 	
-class Player_rotate:
+class PlayerRotateBehavior:
 
 	position 		  = Vector(0,0)
 	face              = Vector(0,0)
@@ -119,15 +115,14 @@ class Player_rotate:
 		self.face 	  = Vector(position.x, position.y - 200)
 
 	def process_event(self, mouse_point):
-		mouse_vec = mouse_point - self.position   
-		face_vec = self.face - self.position
-		self.rotation_angle = face_vec.norm().angle_between(mouse_vec.norm()) 
+		self.rotation_angle = (self.face - self.position).norm().angle_between((mouse_point - self.position).norm()) 
 		self.rotation_change = True
 
 	def print_rotation_angle(self):
 		print("rotate angle: [ " + str(round(self.rotation_angle * 180 / math.pi)) + " ] degrees")
 
 	def get_rotation_angle(self):
+		self.rotation_change = False
 		return self.rotation_angle	
 
 	def get_rotation_change(self):
@@ -137,37 +132,37 @@ class Player_rotate:
 		self.rotation_change = change
 
 
-# kazdy obiekt na scenie musi miec metode draw, process_event i update :) z 
-# taka samą nazwą i iloscia argumntów
 class Player:
 
-	id     			= 0
-	THICK  			= 3
-	RADIUS			= 10
-	COLOR  			= get_color(Colors.LIGHT_RED)
-	current_screen 	= None
-	player_move		= None
-	player_rotate   = None
+	id     			  = 0
+	THICK  			  = 3
+	RADIUS			  = 10
+	COLOR  			  = get_color(Colors.LIGHT_RED)
+	current_screen 	  = None
+	move_behavior	  = None
+	rotate_behavior   = None
 
 	current_position  = Vector(0,0)
 	previous_position = Vector(0,0)
 	velocity          = Vector(0,0)
 	mouse_point		  = Vector(0,0)
 
-	graphic = Triangle(0)
+	graphic 		  = Triangle(0)
 
-	
-	# Construktor 
 	def __init__(self, position, screen):
 		self.graphic            = Triangle( 10 )
 		self.current_position  	= position
 		self.previous_position 	= position
 		self.current_screen 	= screen
-		self.player_move 		= Player_move(position)
-		self.player_rotate		= Player_rotate(position)
+		self.move_behavior 		= PlayerMoveBehavior(position)
+		self.rotate_behavior	= PlayerRotateBehavior(position)
 
+	def draw_line_to_cursor(self):
+		pygame.draw.line(self.current_screen, get_color(Colors.YELLOW), self.current_position.to_table(), self.mouse_point.to_table())
 
-	# funkcja odpowiedzialna za rysowanie [ current_screen to okno ]
+	def draw_cursor(self):
+		pygame.draw.circle(self.current_screen, get_color(Colors.YELLOW), self.mouse_point.to_table(), 10, 2)
+
 	def draw(self):
 		pygame.draw.polygon (
 			self.current_screen,  
@@ -175,16 +170,10 @@ class Player:
 			self.graphic.to_draw(self.current_position), 
 			self.THICK )
 
-		# linia od gracza do kursora myszy
-		pygame.draw.line(self.current_screen, get_color(Colors.YELLOW),self.current_position.to_table(), self.mouse_point.to_table())
+		self.draw_line_to_cursor()
+		self.draw_cursor()	
 
-		# kursor myszy - okrag
-		pygame.draw.circle(self.current_screen, get_color(Colors.YELLOW), self.mouse_point.to_table(), 10, 2)
-		
-
-	# funkcja odpowiedzialna za obsluge zdarzen
 	def process_event(self, event):
-
 		if event.type == Events.COLLIDE:
 			self.current_position = event.where
 			
@@ -194,26 +183,20 @@ class Player:
  	
 		if event.type == pygame.MOUSEMOTION :
 			self.mouse_point = (Vector(event.pos[0], event.pos[1]))
-			self.player_rotate.process_event(self.mouse_point)
+			self.rotate_behavior.process_event(self.mouse_point)
 	
 		if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
-			self.player_move.process_event(event)
+			self.move_behavior.process_event(event)
 
-		
-	# funcja odpowiedzialna ze aktualizacje stanu/ ruch, kolor
 	def __move(self):
-		self.previous_position = self.player_move.get_current_position()
-		self.velocity 		   = self.player_move.get_velocity()
+		self.previous_position = self.move_behavior.get_current_position()
+		self.velocity 		   = self.move_behavior.get_velocity()
 		self.current_position  += self.velocity
-		self.player_rotate.update_position(self.current_position)
+		self.rotate_behavior.update_position(self.current_position)
 	
 	def update(self, delta):				
 		self.__move()
-
-		self.player_move.handle_orientation_key_press()	
+		self.move_behavior.handle_orientation_key_press()	
 		
-		if self.player_rotate.get_rotation_change() :
-			self.graphic.rotate(self.player_rotate.get_rotation_angle())
-			self.player_rotate.set_rotation_change(False)
-
-		pass
+		if self.rotate_behavior.get_rotation_change() :
+			self.graphic.rotate(self.rotate_behavior.get_rotation_angle())

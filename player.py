@@ -28,7 +28,141 @@ class Triangle:
 				 (position + self.vertices[2]).to_touple()
 			]
 	
+class Player_move:
 
+	position  		= Vector(0,0)
+	velocity  		= Vector(0,0)
+	screen_size		= Vector(0,0)	
+	current_screen	= None
+
+	orientation 	= ""
+
+	# DO REORGANIZACJI
+	key_pressed     = { 
+						"up"   : 
+						{ 
+							"scancode": [72, 17],
+							"enable"  : False,
+							"velocity": Vector(0.0, -1.0)
+						},
+						"down"   : 
+						{ 
+							"scancode": [80, 31],
+							"enable"  : False,
+							"velocity": Vector(0.0, 1.0)
+						},
+						"left"   : 
+						{ 
+							"scancode": [77, 32],
+							"enable"  : False,
+							"velocity": Vector(1.0, 0.0)
+						},
+						"right"   : 
+						{ 
+							"scancode": [75, 30],
+							"enable"  : False,
+							"velocity": Vector(-1.0, 0.0)
+						}
+					}	
+
+	def __init__(self, position, screen_size):
+		self.position = position
+		self.screen_size = screen_size
+
+	def set_orientation(self, velocity, orientation):
+		self.velocity += velocity
+		self.velocity = self.velocity.norm()
+		if self.orientation != orientation:
+			self.orientation = orientation
+
+	def scancode_to_orientation(self, scancode):
+		for key in self.key_pressed.keys():
+			if scancode in self.key_pressed[key]["scancode"]:
+				return str(key)
+		return None
+			
+	def enable_key_pressed(self, orientation):
+		if orientation == None: return
+		self.key_pressed[orientation]["enable"] = True
+
+	def disable_key_pressed(self, orientation):
+		if orientation == None: return
+		self.key_pressed[orientation]["enable"] = False
+
+	def handle_orientation_key_press(self):
+		for key in self.key_pressed.keys():
+			if self.key_pressed[key]["enable"]:
+				self.set_orientation(self.key_pressed[key]["velocity"], str(key))
+
+	def process_event(self, event):
+		
+		# NIE OGARNIAM
+		if event.type == Events.COLLIDE:
+			self.current_position = event.where
+			
+			if event.stuck :
+				self.current_position  = Vector(randint(0,self.screen_size.x), randint(0,self.screen_size.y))
+				self.previous_position = self.current_position
+
+		if event.type == pygame.KEYDOWN:
+			self.enable_key_pressed(self.scancode_to_orientation(event.scancode))
+		elif event.type == pygame.KEYUP:
+			self.disable_key_pressed(self.scancode_to_orientation(event.scancode))
+			self.velocity = Vector(0,0)
+
+	def get_velocity(self):
+		return self.velocity
+
+	def get_current_position(self):
+		return self.position
+
+	
+class Player_rotate:
+
+	position 		  = Vector(0,0)
+	face              = Vector(0,0)
+	mouse_point       = Vector(0,0)
+	mouse_vec 		  = Vector(0,0)
+	rotation_angle    = 0.0
+	rotation_change   = False
+
+	def __init__(self, position):
+		self.position = position
+
+	def update_position(self, position):
+		self.position = position
+		self.face 	  = Vector(position.x, position.y - 200)
+
+	def process_event(self, event):
+		if event.type == pygame.MOUSEMOTION :
+			self.mouse_point = (Vector(event.pos[0], event.pos[1]))
+			self.mouse_vec = self.mouse_point - self.position   
+			face_vec = self.face - self.position
+			self.rotation_angle = face_vec.norm().angle_between(self.mouse_vec.norm()) 
+			self.rotation_change = True
+			# self.print_rotation_angle()
+
+	def print_rotation_angle(self):
+		print("rotate angle: [ " + str(round(self.rotation_angle * 180 / math.pi)) + " ] degrees")		
+	def get_rotation_angle(self):
+		return self.rotation_angle	
+
+	def get_rotation_change(self):
+		return self.rotation_change
+
+	def set_rotation_change(self, change):
+		self.rotation_change = change
+
+	def draw(self, screen):
+
+		# linia od gracza pionowo do gory	
+		# pygame.draw.line(screen, get_color(Colors.YELLOW),self.position.to_table(), self.face.to_table())
+
+		# linia od gracza do kursora myszy
+		pygame.draw.line(screen, get_color(Colors.YELLOW),self.position.to_table(), self.mouse_point.to_table())
+
+		# kursor myszy - okrag
+		pygame.draw.circle(screen, get_color(Colors.YELLOW), self.mouse_point.to_table(), 10, 2)
 
 # kazdy obiekt na scenie musi miec metode draw, process_event i update :) z 
 # taka samą nazwą i iloscia argumntów
@@ -39,60 +173,26 @@ class Player:
 	RADIUS			= 10
 	COLOR  			= get_color(Colors.LIGHT_RED)
 	current_screen 	= None
-	direction 		= "up"
-
-	key_pressed     = { 
-						"up"   : 
-						{ 
-							"scancode": [72, 17],
-							"enable"  : False,
-							"rotation": 0,
-							"velocity": Vector(0.0, -1.0)
-						},
-						"down"   : 
-						{ 
-							"scancode": [80, 31],
-							"enable"  : False,
-							"rotation": math.pi,
-							"velocity": Vector(0.0, 1.0)
-						},
-						"left"   : 
-						{ 
-							"scancode": [77, 32],
-							"enable"  : False,
-							"rotation": math.pi/2,
-							"velocity": Vector(1.0, 0.0)
-						},
-						"right"   : 
-						{ 
-							"scancode": [75, 30],
-							"enable"  : False,
-							"rotation": -math.pi/2,
-							"velocity": Vector(-1.0, 0.0)
-						}
-					}
-
+	player_move		= None
+	player_rotate   = None
 
 	current_position  = Vector(0,0)
 	previous_position = Vector(0,0)
-	velocity          = Vector(0,0)
-	face              = Vector(0,0)
-	mouse_point       = Vector(0,0)
-	mouse_vec 		  = Vector(0,0)
+	velocity          = Vector(0,0) # nie wiem czy to potrzebne jest gdzies poza player ??
 	
 	graphic = Triangle(0)
-	
-	rotation_angle = 0.0
-	rotation_change = False
+
 	
 	# Construktor 
-	def __init__(self, position, screen):
+	def __init__(self, position, screen, screen_size):
 		self.graphic            = Triangle( 10 )
 		self.current_position  	= position
 		self.previous_position 	= position
 		self.current_screen 	= screen
+		self.player_move 		= Player_move(position, screen_size)
+		self.player_rotate		= Player_rotate(position)
 
-				
+
 	# funkcja odpowiedzialna za rysowanie [ current_screen to okno ]
 	def draw(self):
 		pygame.draw.polygon (
@@ -101,86 +201,34 @@ class Player:
 			self.graphic.to_draw(self.current_position), 
 			self.THICK )
 
-		self.face = Vector(
-			self.current_position.x,
-			self.current_position.y - 200)
-		# linia od gracza pionowo do gory	
-		#pygame.draw.line(self.current_screen, get_color(Colors.YELLOW),self.current_position.to_table(), self.face.to_table())
-
-		 # linia od gracza do kursora myszy
-		pygame.draw.line(self.current_screen, get_color(Colors.YELLOW),self.current_position.to_table(), self.mouse_point.to_table())
-
-		# kursor myszy - okrag
-		pygame.draw.circle(self.current_screen, get_color(Colors.YELLOW), self.mouse_point.to_table(), 10, 2)
-		
+		self.player_rotate.draw(self.current_screen)
 		
 
-	def set_direction(self, velocity, direction, angle): # nazwa do ustalenia
-		self.velocity += velocity
-		self.velocity = self.velocity.norm()
-		if self.direction != direction:
-			self.direction = direction
-			self.rotation_change = True
-
-			
-	def scancode_to_direction(self, scancode): # to by się już dało tylko dziedziczeniem
-		for key in self.key_pressed.keys():
-			if scancode in self.key_pressed[key]["scancode"]:
-				return str(key)
-		return None
-			
-	def enable_key_pressed(self, direction):
-		if direction == None: return
-		self.key_pressed[direction]["enable"] = True
-
-	def disable_key_pressed(self, direction):
-		if direction == None: return
-		self.key_pressed[direction]["enable"] = False
-
-	def handle_direction_key_press(self): # da się zrefaktorować ale przestanie się obracać
-		for key in self.key_pressed.keys():
-			if self.key_pressed[key]["enable"]:
-				self.set_direction(self.key_pressed[key]["velocity"], str(key), self.key_pressed[key]["rotation"])
-
+	# DO ZMIANY
 	# funkcja odpowiedzialna za obsluge zdarzen
 	def process_event(self, event):
  	
 		if event.type == pygame.MOUSEMOTION :
-			self.mouse_point = (Vector(event.pos[0], event.pos[1]))
-			self.mouse_vec = self.mouse_point - self.current_position   
-			face_vec = self.face - self.current_position
-			self.rotate_angle = face_vec.norm().angle_between( self.mouse_vec.norm() ) 
-			#print ("rotate angle: " + str(round(self.rotate_angle * 180 / math.pi)) )
-			self.rotation_change = True
-			pass
+			self.player_rotate.process_event(event)
 	
-		if event.type == Events.COLLIDE:
-			self.current_position = event.where
-			
-			if event.stuck :
-				self.current_position = Vector(randint(0,self.screen_size.x), randint(0,self.screen_size.y))
-				self.previous_position   = self.current_position
-	
-		if event.type == pygame.KEYDOWN:
-			self.enable_key_pressed(self.scancode_to_direction(event.scancode))
-		elif event.type == pygame.KEYUP:
-			self.disable_key_pressed(self.scancode_to_direction(event.scancode))
-			self.velocity = Vector(0,0)
+		if event.type == Events.COLLIDE or event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
+			self.player_move.process_event(event)
 
 		
 	# funcja odpowiedzialna ze aktualizacje stanu/ ruch, kolor
 	def __move(self):
-		self.previous_position = self.current_position
+		self.previous_position = self.player_move.get_current_position()
+		self.velocity 		   = self.player_move.get_velocity()
 		self.current_position  += self.velocity
+		self.player_rotate.update_position(self.current_position)
 	
 	def update(self, delta):				
 		self.__move()
 
-		self.handle_direction_key_press()	
+		self.player_move.handle_orientation_key_press()	
 		
-		if self.rotation_change :
-			self.graphic.rotate(self.rotate_angle)
-			self.rotation_change = False
+		if self.player_rotate.get_rotation_change() :
+			self.graphic.rotate(self.player_rotate.get_rotation_angle())
+			self.player_rotate.set_rotation_change(False)
 
-		
 		pass

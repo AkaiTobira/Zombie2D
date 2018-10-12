@@ -4,6 +4,7 @@ import math
 from vector import Vector
 from random import randint
 from events import Events, rise_event
+from colors   import Colors, get_color
 
 class UnitManager:
 	obstacle_list = []
@@ -26,7 +27,7 @@ class UnitManager:
 		self.player           = player
 		
 	def draw(self):
-		self.screen.fill((20,30,47))
+		self.screen.fill(get_color(Colors.NAVYBLUE))
 		for obj in ( self.enemy_list + self.obstacle_list ):
 			obj.draw()
 		self.player.draw()

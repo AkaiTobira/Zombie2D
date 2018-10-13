@@ -25,18 +25,23 @@ class Triangle:
 				 (position + self.vertices[2]).to_touple()]
 
 class Cursor:
-	position  = 0.0
-	COLOR     = get_color(Colors.YELLOW)	
-	RADIUS	  = 12	
-	THICK	  = 1	
+	COLOR       = get_color(Colors.YELLOW)	
+	RADIUS	    = 12	
+	THICK	    = 1	
+	mouse_point = Vector(0,0)
+	screen      = None
 
-	def __init__(self, position):
-		self.position = position
+	def __init__(self, screen, position):
+		self.mouse_point = position
+		self.screen      = screen
 
-	def draw(self, screen, mouse_point):
-		pygame.draw.circle(screen, self.COLOR, mouse_point.to_table(), self.RADIUS, self.THICK)
-		pygame.draw.line(screen, self.COLOR, Vector(mouse_point.x-self.RADIUS, mouse_point.y).to_table(), Vector(mouse_point.x+self.RADIUS, mouse_point.y).to_table(), self.THICK)
-		pygame.draw.line(screen, self.COLOR, Vector(mouse_point.x, mouse_point.y-self.RADIUS).to_table(), Vector(mouse_point.x, mouse_point.y+self.RADIUS).to_table(), self.THICK)
+	def process_event(self,event):
+		self.mouse_point = (Vector(event.pos[0], event.pos[1]))
+
+	def draw(self):
+		pygame.draw.circle(self.screen, self.COLOR, self.mouse_point.to_table(), self.RADIUS, self.THICK)
+		pygame.draw.line(self.screen, self.COLOR, Vector(self.mouse_point.x-self.RADIUS, self.mouse_point.y).to_table(), Vector(self.mouse_point.x+self.RADIUS,self.mouse_point.y).to_table(), self.THICK)
+		pygame.draw.line(self.screen, self.COLOR, Vector(self.mouse_point.x, self.mouse_point.y-self.RADIUS).to_table(), Vector(self.mouse_point.x, self.mouse_point.y+self.RADIUS).to_table(), self.THICK)
 
 class PlayerMoveBehavior:
 
@@ -128,8 +133,8 @@ class PlayerRotateBehavior:
 		self.position = position
 		self.face 	  = Vector(position.x, position.y - 200)
 
-	def process_event(self, mouse_point):
-		self.rotation_angle = (self.face - self.position).norm().angle_between((mouse_point - self.position).norm()) 
+	def process_event(self, event):
+		self.rotation_angle = (self.face - self.position).norm().angle_between((Vector(event.pos[0], event.pos[1]) - self.position).norm()) 
 		self.rotation_change = True
 
 	def print_rotation_angle(self):
@@ -161,7 +166,7 @@ class Player:
 	previous_position = Vector(0,0)
 	velocity          = Vector(0,0)
 	mouse_point		  = Vector(0,0)
-
+	screen_size       = Vector(0,0)
 	graphic 		  = Triangle(0)
 
 	def __init__(self, position, screen):
@@ -171,7 +176,7 @@ class Player:
 		self.current_screen 	= screen
 		self.move_behavior 		= PlayerMoveBehavior(position)
 		self.rotate_behavior	= PlayerRotateBehavior(position)
-		self.cursor				= Cursor(position)
+		self.cursor				= Cursor(screen, position)
 
 	def draw_line_to_cursor(self):
 		pygame.draw.line(self.current_screen, get_color(Colors.YELLOW), self.current_position.to_table(), self.mouse_point.to_table())
@@ -182,9 +187,7 @@ class Player:
 			self.COLOR, 
 			self.graphic.to_draw(self.current_position), 
 			self.THICK )
-
-		#self.draw_line_to_cursor()
-		self.cursor.draw(self.current_screen, self.mouse_point)
+		self.cursor.draw()
 
 	def process_event(self, event):
 		if event.type == Events.COLLIDE:
@@ -195,8 +198,8 @@ class Player:
 				self.previous_position = self.current_position		
  	
 		if event.type == pygame.MOUSEMOTION :
-			self.mouse_point = (Vector(event.pos[0], event.pos[1]))
-			self.rotate_behavior.process_event(self.mouse_point)
+			self.cursor.process_event(event)
+			self.rotate_behavior.process_event(event)
 	
 		if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
 			self.move_behavior.process_event(event)
@@ -207,9 +210,12 @@ class Player:
 		self.current_position  += self.velocity
 		self.rotate_behavior.update_position(self.current_position)
 	
+	def handle_rotation(self):
+		if self.rotate_behavior.get_rotation_change() :
+			self.graphic.rotate(self.rotate_behavior.get_rotation_angle())
+
 	def update(self, delta):				
 		self.__move()
 		self.move_behavior.handle_orientation_key_press()	
-		
-		if self.rotate_behavior.get_rotation_change() :
-			self.graphic.rotate(self.rotate_behavior.get_rotation_angle())
+		self.handle_rotation()
+

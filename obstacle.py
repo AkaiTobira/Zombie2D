@@ -13,7 +13,6 @@ class Obstacle:
 	id = -1
 	state = "Const"
 
-	pos   = [0.0,0.0]
 	color = (0,0,0)
 	thick = 0.0
 	current_screen = None
@@ -25,13 +24,12 @@ class Obstacle:
 		self.COLOR  = get_color(Colors.LIGHT_PURPLE)
 		self.RADIUS = randint(15,30) 
 		self.current_screen   = screen
-		self.pos   			  = [randint(0,screen_size.x), randint(0,screen_size.y)]
 		
 		self.id               = id
-		self.current_position = Vector(self.pos[0],self.pos[1])
+		self.current_position = Vector( randint(0,screen_size.x), randint(0,screen_size.y))
 		
 	def draw(self):
-		pygame.draw.circle(self.current_screen, self.COLOR, self.pos, self.RADIUS, self.THICK )
+		pygame.draw.circle(self.current_screen, self.COLOR, self.current_position.to_table(), self.RADIUS, self.THICK )
 		
 	def process_event(self,event):
 		pass

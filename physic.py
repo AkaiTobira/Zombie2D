@@ -62,25 +62,75 @@ class UnitManager:
 
 	def remove_unit(self,unit):
 		self.zombie_counter -= 1
-#		entity_list.remove
 		pass		
 	
+class EnemySteeringBehaviours:
+	maxSpeed         = Vector(2,2)
+	mass             = 1
+	current_position = Vector(0,0)
+	velocity         = Vector(0,0)
+	target_pos       = Vector(0,0)
+
+	head             = Vector(0,0)
+	side             = Vector(0,0)
+
+	def __init__(self, current_position):
+		self.current_position = current_position
+		self.head             = Vector(0,1).norm()
+		self.side             = self.head.perp()
+
+	def __get_steering(self):
+		return self.__seek()
+
+	def calculate_behaviour(self):
+		steering      = self.__get_steering()
+		acceleration  = steering / self.mass
+		self.velocity += acceleration * 0.018
+		self.velocity = self.velocity.trunc(self.maxSpeed)
+
+		self.head     = self.velocity.norm() 
+		self.side     = self.head.perp()
+		return self.velocity
+
+	def set_target(self, target):
+		self.target_pos    =  target 
+
+	def __seek(self):
+		return (self.target_pos - self.current_position).norm() * self.maxSpeed - self.velocity
+
+	def __flee(self):
+		return (self.current_position - self.target_pos ).norm() * self.maxSpeed - self.velocity
+
+	def __arrive(self):
+		pass
+
+	def __wander(self):
+		pass
 	
+	def __hide(self):
+		pass
+
+	def __group(self):
+		pass
+
+	def __kill(self):
+		pass
+
 class MoveSystem:
-	entity_list = []
-	player      = None
+	obstacle_list = []
+	enemy_list    = []
+	player        = None
 	
 	def __init__(self, units, player):
-		self.entity_list =  units[0] + units[1] 
-		self.player      = player
+		self.obstacle_list = units[1]
+		self.enemy_list    = units[0] 
+		self.player        = player
 
 	def __line_intersect(self, position):
-		for unit in self.entity_list:
-			if unit.state == "Const":
-				if position.distance_to(unit.current_position).len() < unit.RADIUS:
-					return unit
+		for unit in self.obstacle_list:
+			if position.distance_to(unit.current_position).len() < unit.RADIUS:
+				return unit
 		return None
-
 
 	def __run_before_player_destination(self ):
 		destination = Vector( randint(0,1024), randint(0, 720) )
@@ -91,7 +141,7 @@ class MoveSystem:
 		return destination
 	
 	def update(self, delta):
-		for unit in self.entity_list:
+		for unit in self.enemy_list:
 			if unit.state == "Wait":
 
 				if randint(0,500) < 25 :

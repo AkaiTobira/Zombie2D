@@ -71,7 +71,7 @@ class Vector:
 		return self * (1/self.len())
 	
 	def trunc(self, v):
-		return Vector( self.x if self.x < v.x else v.x, self.y if self.y < v.y else v.y ) 
+		return self.norm() * v.len()
 		
 	def rotate(self, angle, axis = None ):
 		if axis == None:
@@ -86,3 +86,6 @@ class Vector:
 
 	def sign(self):
 		return Vector( 1 if self.x > 0 else 0 if self.x == 0 else -1, 1 if self.y > 0 else 0 if self.y == 0 else -1  )
+
+	def perp(self):
+		return self.rotate(math.pi/2)

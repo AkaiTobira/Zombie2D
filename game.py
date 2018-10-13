@@ -4,7 +4,7 @@ import pygame
 from obstacle  import Obstacle as Ob 
 from vector    import Vector 
 from physic    import UnitManager
-from generator import ObjectsGenerator
+from generator import ObjectsGenerator, Sandbox
 
 NUMBER_OF_ENEMIES   = 30
 NUMBER_OF_OBSTACLES = 20
@@ -30,6 +30,7 @@ class Game:
 	
 	def __init_pygame(self, resolution,name):
 		pygame.init()
+		pygame.mouse.set_visible(False)
 		pygame.display.set_caption(name)
 		self.screen = pygame.display.set_mode(resolution)
 		#delta_time = pygame.time.get_ticks()

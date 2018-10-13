@@ -152,3 +152,27 @@ class Enemy:
 				self.__check_stop(distance)
 				self.__move(velocity, delta)
 				pass
+
+class Enemy2:
+	THICKNESS = 6
+	RADIUS    = 6
+	COLOR     = get_color(Colors.LIGHT_BLUE)
+
+	current_screen = None
+
+	def __init__(self,  screen, screen_size, id):
+
+		self.current_screen   = screen
+		self.screen_size      = screen_size
+		self.current_position = Vector(randint(0,self.screen_size.x), randint(0,self.screen_size.y))
+		self.previous_position= self.current_position
+		
+		self.destination      = self.current_position
+		self.id               = id
+		
+		self.distance         = Vector(0.0,0.0)
+		self.accumulate        = Vector(0.0,0.0)
+
+
+	def draw(self):
+		pygame.draw.circle(self.current_screen, self.COLOR, self.current_position.to_table(), self.RADIUS, self.THICKNESS )

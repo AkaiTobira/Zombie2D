@@ -154,6 +154,7 @@ class PlayerRotateBehavior:
 class Player:
 
 	id     			  = 0
+	HP				  = 0	
 	THICK  			  = 3
 	RADIUS			  = 10
 	COLOR  			  = get_color(Colors.LIGHT_RED)
@@ -169,7 +170,7 @@ class Player:
 	screen_size       = Vector(0,0)
 	graphic 		  = Triangle(0)
 
-	def __init__(self, position, screen):
+	def __init__(self, position, screen, hp):
 		self.graphic            = Triangle( 10 )
 		self.current_position  	= position
 		self.previous_position 	= position
@@ -177,6 +178,13 @@ class Player:
 		self.move_behavior 		= PlayerMoveBehavior(position)
 		self.rotate_behavior	= PlayerRotateBehavior(position)
 		self.cursor				= Cursor(screen, position)
+		self.HP					= hp 		
+
+	def get_HP(self):
+		return self.HP
+	
+	def decrease_HP(self, amount):
+		self.HP -= amount
 
 	def draw_line_to_cursor(self):
 		pygame.draw.line(self.current_screen, get_color(Colors.YELLOW), self.current_position.to_table(), self.mouse_point.to_table())

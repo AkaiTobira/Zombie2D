@@ -55,17 +55,17 @@ class Enemy:
 	
 	def draw(self):
 	
-		pygame.draw.line(self.current_screen, get_color(Colors.BLACK),self.start_position.to_table(), self.destination.to_table() )
+		#pygame.draw.line(self.current_screen, get_color(Colors.BLACK),self.start_position.to_table(), self.destination.to_table() )
 	
 		pygame.draw.circle(self.current_screen, self.COLOR, self.current_position.to_table(), self.RADIUS, self.THICKNESS )
 		
 		# draw destination
-		pygame.draw.line(self.current_screen, get_color(Colors.RED),self.current_position.to_table(), self.destination.to_table() )
+		#pygame.draw.line(self.current_screen, get_color(Colors.RED),self.current_position.to_table(), self.destination.to_table() )
 		
 		# draw velocity
-		pygame.draw.line(self.current_screen, get_color(Colors.GREEN),self.current_position.to_table(),(self.current_position + self.f + self.distance.norm() ).to_table())
+		#pygame.draw.line(self.current_screen, get_color(Colors.GREEN),self.current_position.to_table(),(self.current_position + self.f + self.distance.norm() ).to_table())
 
-		pygame.draw.line(self.current_screen, get_color(Colors.BLUE),self.current_position.to_table(),(self.current_position + self.velocity ).to_table())
+		#pygame.draw.line(self.current_screen, get_color(Colors.BLUE),self.current_position.to_table(),(self.current_position + self.velocity ).to_table())
 
 		
 		# draw shorter ahead

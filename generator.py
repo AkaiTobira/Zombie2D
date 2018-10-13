@@ -29,8 +29,8 @@ class Sandbox:
 			self.enemy_list[i].current_position = Vector( 100, 100)
 			self.id_counter += 1
 
-	def get_spawned_player(self, position):
-		return Player(position, self.screen)
+	def get_spawned_player(self, position, hp):
+		return Player(position, self.screen, hp)
 		
 	def generate_obstacles(self):	
 		for i in range(self.number_of_obstacles):
@@ -65,8 +65,8 @@ class ObjectsGenerator:
 			self.enemy_list.append(Enemy( self.screen, self.resulution, self.id_counter) )
 			self.id_counter += 1
 	
-	def get_spawned_player(self, position):
-		return Player(position, self.screen)
+	def get_spawned_player(self, position, hp):
+		return Player(position, self.screen, hp)
 		
 	def generate_obstacles(self):	
 		for i in range(self.number_of_obstacles):

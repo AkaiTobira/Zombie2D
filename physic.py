@@ -31,13 +31,13 @@ class UnitManager:
 		for obj in ( self.enemy_list + self.obstacle_list ):
 			obj.draw()
 		self.player.draw()
-		pygame.display.flip()
 		
 	def process_input(self,event):
 	
 		if event.type == Events.COLLIDE:
 			if event.who == 0:
 				self.player.process_event(event)
+				self.player.decrease_HP(1)
 				return 
 			for unit in self.enemy_list:
 				if unit.id == event.who:

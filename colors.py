@@ -11,7 +11,7 @@ class Colors(Enum):
 	BLUE         = (0,0,255)
 	BLACK        = (0,0,0)
 	NAVYBLUE	 = (20,30,47)
-
+	WHITE		 = (255,255,255)
 	
 def get_color( color ):
 	if color == Colors.LIGHT_BLUE:
@@ -32,4 +32,5 @@ def get_color( color ):
 		return (255,255,0)	
 	if color == Colors.NAVYBLUE:
 		return (20,30,47)	
-		
+	if color == Colors.WHITE:
+		return (255,255,255)		

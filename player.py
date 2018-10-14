@@ -170,6 +170,8 @@ class Player:
 	screen_size       = Vector(0,0)
 	graphic 		  = Triangle(0)
 
+	speed             = Vector(20.0,20.0)
+
 	def __init__(self, position, screen, hp):
 		self.graphic            = Triangle( 10 )
 		self.current_position  	= position
@@ -212,10 +214,10 @@ class Player:
 		if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
 			self.move_behavior.process_event(event)
 
-	def __move(self):
+	def __move(self,delta):
 		self.previous_position = self.move_behavior.get_current_position()
 		self.velocity 		   = self.move_behavior.get_velocity()
-		self.current_position  += self.velocity
+		self.current_position  += (self.velocity*delta)*self.speed
 		self.rotate_behavior.update_position(self.current_position)
 	
 	def handle_rotation(self):
@@ -223,7 +225,7 @@ class Player:
 			self.graphic.rotate(self.rotate_behavior.get_rotation_angle())
 
 	def update(self, delta):				
-		self.__move()
+		self.__move(delta)
 		self.move_behavior.handle_orientation_key_press()	
 		self.handle_rotation()
 

@@ -7,16 +7,16 @@ from game     import Game
 def main():
 
 	game = Game((1024,720), "Zombie2D")
+	clock = pygame.time.Clock()
     #logo = pygame.image.load("logo32x32.png")
     #pygame.display.set_icon(logo)
 	
 	while game.is_running():
-	#	fps = pygame.time.get_ticks()
+		delta = clock.tick()/1000
 		game.draw()
-		game.process_physic()
+		game.process_physic(delta)
 		game.process_input()
-	#	while (pygame.time.get_ticks() - fps )/1000 <= 1/60:
-	#		print((pygame.time.get_ticks() - fps )/1000)
+	#	while delta <= 1/60:
 	#		sleep(0.0001)
      
 if __name__=="__main__":

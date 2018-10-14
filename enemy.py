@@ -28,7 +28,7 @@ class Enemy:
 	destination = Vector(0.0,0.0)
 	distance    = Vector(0.0,0.0)
 	move        = Vector(1.0,1.0)
-	speed       = 3
+	speed       = Vector(35,35)
 	
 	screen_size = Vector(0,0)
 	
@@ -36,7 +36,7 @@ class Enemy:
 	
 	def __move(self, velocity ,delta):
 		self.previous_position      = self.current_position
-		self.current_position      += velocity
+		self.current_position      += ( velocity*delta )*self.speed
 	
 	
 	def __init__(self,  screen, screen_size, id):
@@ -125,7 +125,7 @@ class Enemy:
 		
 	def update(self, delta):
 			if self.state == "Move":
-				desired_velocity = self.current_position.distance_to(self.destination).norm() * self.speed
+				desired_velocity = self.current_position.distance_to(self.destination).norm()# * self.speed
 	#			
 	#			self.seing_ahead       = self.current_position + self.velocity * self.speed * 10
 	#			self.seing_ahead_short = self.current_position + self.velocity * self.speed * (10/2)

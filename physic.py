@@ -190,39 +190,39 @@ class CollisionSystem:
 		if distance <= math.fabs(unit_2.RADIUS - unit.RADIUS + self.OFFSET): return True
 		return False
 
-	def __detect_collision_with_obstacle(self, unit):
+	def __detect_collision_with_obstacle(self, unit,delta):
 		for unit_2 in self.obstacle_list:
-			distance = ( unit.current_position + unit.velocity ).distance_to(unit_2.current_position + unit_2.velocity).len()
+			distance = ( unit.current_position + unit.velocity*delta ).distance_to(unit_2.current_position + unit_2.velocity*delta).len()
 			if self.__is_colliding(unit,unit_2,distance):
-				self.__send_collision_message(unit, unit_2, self.__is_stuck(unit,unit_2,distance))
+				self.__send_collision_message(unit, unit_2, self.__is_stuck(unit,unit_2,distance),delta)
 
-	def __detect_collision_with_unit(self, unit):
+	def __detect_collision_with_unit(self, unit,delta):
 		for unit_2 in self.enemy_list:
-			distance = ( unit.current_position + unit.velocity ).distance_to(unit_2.current_position + unit_2.velocity).len()
+			distance = ( unit.current_position + unit.velocity*delta ).distance_to(unit_2.current_position + unit_2.velocity*delta).len()
 			if self.__is_colliding(unit,unit_2,distance):
-				self.__send_collision_message(unit, unit_2, self.__is_stuck(unit,unit_2,distance))
+				self.__send_collision_message(unit, unit_2, self.__is_stuck(unit,unit_2,distance),delta)
 				if not unit_2.velocity.is_zero_len():
-					self.__send_collision_message( unit_2, unit, self.__is_stuck(unit_2,unit,distance))
+					self.__send_collision_message( unit_2, unit, self.__is_stuck(unit_2,unit,distance),delta)
 
-	def __send_collision_message(self, unit, unit_2, is_stuck):
-		rise_event(Events.COLLIDE, { "who" : unit.id, "stuck" : is_stuck, "with" : unit_2.id, "where" : unit.current_position - unit.velocity  } )
+	def __send_collision_message(self, unit, unit_2, is_stuck,delta):
+		rise_event(Events.COLLIDE, { "who" : unit.id, "stuck" : is_stuck, "with" : unit_2.id, "where" : unit.current_position - unit.velocity*delta  } )
 
-	def __detect_collision_with_wall(self, unit):
-		if (unit.current_position + unit.velocity).is_behind( self.ZERO_VECTOR ) or not (unit.current_position + unit.velocity).is_behind( self.screen_size ):
-			rise_event(Events.COLLIDE, { "who" : unit.id, "stuck" : False, "with" : -1, "where" : unit.current_position - unit.velocity  } )
+	def __detect_collision_with_wall(self, unit,delta):
+		if (unit.current_position + unit.velocity*delta).is_behind( self.ZERO_VECTOR ) or not (unit.current_position + unit.velocity*delta).is_behind( self.screen_size ):
+			rise_event(Events.COLLIDE, { "who" : unit.id, "stuck" : False, "with" : -1, "where" : unit.current_position - unit.velocity*delta  } )
 
-	def __detect_collision_for_player(self):
-		self.__detect_collision_with_obstacle(self.player)
-		self.__detect_collision_with_unit(self.player)
-		self.__detect_collision_with_wall(self.player)
+	def __detect_collision_for_player(self,delta):
+		self.__detect_collision_with_obstacle(self.player,delta)
+		self.__detect_collision_with_unit(self.player,delta)
+		self.__detect_collision_with_wall(self.player,delta)
 
-	def __detect_collision_for_enemies(self):
+	def __detect_collision_for_enemies(self,delta):
 		for unit in self.enemy_list:
 			if not unit.velocity.is_zero_len():
-				self.__detect_collision_with_unit(unit)
-				self.__detect_collision_with_obstacle(unit)
+				self.__detect_collision_with_unit(unit,delta)
+				self.__detect_collision_with_obstacle(unit,delta)
 	#			self.__detect_collision_with_wall(unit)
 
 	def update(self, delta):
-		self.__detect_collision_for_player()
-		self.__detect_collision_for_enemies()
+		self.__detect_collision_for_player(delta)
+		self.__detect_collision_for_enemies(delta)

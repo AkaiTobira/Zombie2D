@@ -62,6 +62,7 @@ class Game:
 				self.running = False
 				return
 			self.unitManager.process_input(event)
+			self.HUD.process_event(event)
 			
 		
 	def __calculate_delta_time(self):
@@ -75,5 +76,5 @@ class Game:
 	def process_physic(self,delta):
 		self.__calculate_delta_time()
 		self.unitManager.process_physic(delta)
-		print(delta)
+	#	print(delta)
 

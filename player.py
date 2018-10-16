@@ -24,86 +24,71 @@ class Triangle:
 				 (position + self.vertices[1]).to_touple(),
 				 (position + self.vertices[2]).to_touple()]
 
-class Cursor:
-	COLOR       = get_color(Colors.YELLOW)	
-	RADIUS	    = 12	
-	THICK	    = 1	
-	mouse_point = Vector(0,0)
-	screen      = None
 
-	def __init__(self, screen, position):
-		self.mouse_point = position
-		self.screen      = screen
+class Orientation:
 
-	def process_event(self,event):
-		self.mouse_point = (Vector(event.pos[0], event.pos[1]))
+	scancode = []
+	enable   = False
+	velocity = Vector(0,0)
 
-	def draw(self):
-		pygame.draw.circle(self.screen, self.COLOR, self.mouse_point.to_table(), self.RADIUS, self.THICK)
-		pygame.draw.line(self.screen, self.COLOR, Vector(self.mouse_point.x-self.RADIUS, self.mouse_point.y).to_table(), Vector(self.mouse_point.x+self.RADIUS,self.mouse_point.y).to_table(), self.THICK)
-		pygame.draw.line(self.screen, self.COLOR, Vector(self.mouse_point.x, self.mouse_point.y-self.RADIUS).to_table(), Vector(self.mouse_point.x, self.mouse_point.y+self.RADIUS).to_table(), self.THICK)
+	def __init__(self, scancode, velocity):
+		self.scancode = scancode
+		self.velocity = velocity
+
+	def get_velocity(self):
+		return self.velocity
+
+	def get_scancode_table(self):
+		return self.scancode
+
+	def get_enable(self):
+		return self.enable			
+
+	def enable_orientation(self):
+		self.enable = True	
+
+	def disable_orientation(self):
+		self.enable = False		
+
 
 class PlayerMoveBehavior:
 
-	position  		= Vector(0,0)
-	velocity  		= Vector(0,0)	
-	current_screen	= None
+	position	= Vector(0,0)
+	velocity	= Vector(0,0)	
+	screen		= None
 
-	orientation 	= ""
 
-	key_pressed     = { 
-						"up"   : 
-						{ 
-							"scancode": [72, 17],
-							"enable"  : False,
-							"velocity": Vector(0.0, -1.0)
-						},
-						"down"   : 
-						{ 
-							"scancode": [80, 31],
-							"enable"  : False,
-							"velocity": Vector(0.0, 1.0)
-						},
-						"left"   : 
-						{ 
-							"scancode": [77, 32],
-							"enable"  : False,
-							"velocity": Vector(1.0, 0.0)
-						},
-						"right"   : 
-						{ 
-							"scancode": [75, 30],
-							"enable"  : False,
-							"velocity": Vector(-1.0, 0.0)
-						}
-					}	
+	orientation = {
+					"up"    : Orientation([72, 17], Vector(0.0, -1.0)),
+					"down"  : Orientation([80, 31], Vector(0.0,  1.0)),
+					"right" : Orientation([77, 32], Vector(1.0,  0.0)),
+					"left"  : Orientation([75, 30], Vector(-1.0, 0.0)),
+				  }
 
 	def __init__(self, position):
 		self.position = position
 
 	def set_orientation(self, velocity, orientation):
 		self.velocity = (self.velocity + velocity).norm()
-		if self.orientation != orientation:
-			self.orientation = orientation
 
 	def scancode_to_orientation(self, scancode):
-		for key in self.key_pressed.keys():
-			if scancode in self.key_pressed[key]["scancode"]:
+		for key in self.orientation.keys():
+			if scancode in self.orientation[key].get_scancode_table():
 				return str(key)
 		return None
 			
 	def enable_key_pressed(self, orientation):
 		if orientation == None: return
-		self.key_pressed[orientation]["enable"] = True
+		self.orientation[orientation].enable_orientation()
 
 	def disable_key_pressed(self, orientation):
 		if orientation == None: return
-		self.key_pressed[orientation]["enable"] = False
+		self.orientation[orientation].disable_orientation()
 
 	def handle_orientation_key_press(self):
-		for key in self.key_pressed.keys():
-			if self.key_pressed[key]["enable"]:
-				self.set_orientation(self.key_pressed[key]["velocity"], str(key))
+		for key in self.orientation.keys():
+			if self.orientation[key].get_enable():
+				self.set_orientation(self.orientation[key].get_velocity(), str(key))
 
 	def process_event(self, event):
 		if event.type == pygame.KEYDOWN:
@@ -158,10 +143,9 @@ class Player:
 	THICK  			  = 3
 	RADIUS			  = 10
 	COLOR  			  = get_color(Colors.LIGHT_RED)
-	current_screen 	  = None
+	screen			  = None
 	move_behavior	  = None
 	rotate_behavior   = None
-	cursor	 		  = None
 
 	current_position  = Vector(0,0)
 	previous_position = Vector(0,0)
@@ -176,10 +160,9 @@ class Player:
 		self.graphic            = Triangle( 10 )
 		self.current_position  	= position
 		self.previous_position 	= position
-		self.current_screen 	= screen
+		self.screen				= screen
 		self.move_behavior 		= PlayerMoveBehavior(position)
 		self.rotate_behavior	= PlayerRotateBehavior(position)
-		self.cursor				= Cursor(screen, position)
 		self.HP					= hp 		
 
 	def get_HP(self):
@@ -188,16 +171,12 @@ class Player:
 	def decrease_HP(self, amount):
 		self.HP -= amount
 
-	def draw_line_to_cursor(self):
-		pygame.draw.line(self.current_screen, get_color(Colors.YELLOW), self.current_position.to_table(), self.mouse_point.to_table())
-
 	def draw(self):
 		pygame.draw.polygon (
-			self.current_screen,  
+			self.screen,  
 			self.COLOR, 
 			self.graphic.to_draw(self.current_position), 
 			self.THICK )
-		self.cursor.draw()
 
 	def process_event(self, event):
 		if event.type == Events.COLLIDE:
@@ -207,8 +186,7 @@ class Player:
 				self.current_position  = Vector(randint(0,self.screen_size.x), randint(0,self.screen_size.y))
 				self.previous_position = self.current_position		
  	
-		if event.type == pygame.MOUSEMOTION :
-			self.cursor.process_event(event)
+		if event.type == pygame.MOUSEMOTION:
 			self.rotate_behavior.process_event(event)
 	
 		if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:

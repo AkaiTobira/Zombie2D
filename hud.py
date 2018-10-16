@@ -12,7 +12,7 @@ class Cursor:
 	screen      = None
 
 	def __init__(self, screen):
-		self.screen      = screen
+		self.screen = screen
 
 	def process_event(self, event):
 		if event.type == pygame.MOUSEMOTION:

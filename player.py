@@ -136,6 +136,34 @@ class PlayerRotateBehavior:
 		self.rotation_change = change
 
 
+class PlayerActions:
+
+	screen			= None
+	railgun_color	= get_color(Colors.YELLOW)
+	railgun_thick	= 2
+
+	player_position = Vector(0,0)
+	mouse_position  = Vector(0,0)
+
+	def __init__(self, screen, position):
+		self.player_position = position
+		self.screen = screen
+
+	def draw_railgun(self):
+	#	print("drawing, od: " + str(self.player_position) + ", do: " + str(self.mouse_position))
+		
+		pygame.draw.line(
+			self.screen, 
+			self.railgun_color, 
+			self.player_position.to_table(), 
+			(self.player_position + (1260 * (self.mouse_position - self.player_position).norm())).to_table(), 
+			self.railgun_thick)			
+
+	def process_event(self, event):
+		self.mouse_position = (Vector(event.pos[0], event.pos[1]))
+		self.draw_railgun()
+
+
 class Player:
 
 	id     			  = 0
@@ -146,6 +174,7 @@ class Player:
 	screen			  = None
 	move_behavior	  = None
 	rotate_behavior   = None
+	actions_behavior  = None
 
 	current_position  = Vector(0,0)
 	previous_position = Vector(0,0)
@@ -163,10 +192,11 @@ class Player:
 		self.screen				= screen
 		self.move_behavior 		= PlayerMoveBehavior(position)
 		self.rotate_behavior	= PlayerRotateBehavior(position)
+		self.actions_behavior   = PlayerActions(screen, position)
 		self.HP					= hp 		
 
 	def get_HP(self):
-		return self.HP
+		return self.HP	
 	
 	def decrease_HP(self, amount):
 		self.HP -= amount
@@ -176,7 +206,10 @@ class Player:
 			self.screen,  
 			self.COLOR, 
 			self.graphic.to_draw(self.current_position), 
-			self.THICK )
+			self.THICK )	
+
+	#	pygame.draw.line(self.screen, get_color(Colors.YELLOW), self.current_position.to_table(), (self.current_position + (1260 * (self.mouse_point - self.current_position).norm())).to_table(), 2)	
+			
 
 	def process_event(self, event):
 		if event.type == Events.COLLIDE:
@@ -186,9 +219,13 @@ class Player:
 				self.current_position  = Vector(randint(0,self.screen_size.x), randint(0,self.screen_size.y))
 				self.previous_position = self.current_position		
  	
+		if event.type == pygame.MOUSEBUTTONDOWN:
+			self.actions_behavior.process_event(event)
+
 		if event.type == pygame.MOUSEMOTION:
+			self.mouse_point = (Vector(event.pos[0], event.pos[1]))
 			self.rotate_behavior.process_event(event)
-	
+
 		if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
 			self.move_behavior.process_event(event)
 

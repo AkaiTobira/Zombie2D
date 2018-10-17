@@ -62,9 +62,10 @@ class HUD:
 		return self.font.render( str(text), True, self.color )
 
 	def calculate_cooldown(self):
-		if self.delta >= 1: 
-			self.delta -= 0.1
-		if self.delta == 0:
+		offset = 0.2
+		if self.delta >= offset: 
+			self.delta -= offset
+		if self.delta < offset:
 			self.delta = self.cooldown	
 
 	def draw_HP_amount(self):

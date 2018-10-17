@@ -30,6 +30,7 @@ class Game:
 		self.obj_on_screen = self.generator.create_objects()
 		self.player        = self.generator.get_spawned_player(START_POSITION, 100)
 		self.unitManager   = UnitManager(self.obj_on_screen,self.player, self.screen, resolution)
+		self.HUD 		   = HUD(self.screen, self.player)		
 	
 	def __init_pygame(self, resolution,name):
 		pygame.init()
@@ -43,7 +44,7 @@ class Game:
 		self.running  = True
 		self.generator     = ObjectsGenerator(self.screen, NUMBER_OF_ENEMIES, NUMBER_OF_OBSTACLES,Vector(resolution[0],resolution[1]))
 		self.__init_screen_objects(resolution)
-		self.HUD = HUD(self.screen, self.player)		
+		
 
 	def is_running(self):
 		return self.running

@@ -144,31 +144,32 @@ class PlayerActions:
 	sum_delta		= 0
 	shoot			= False
 
-	player			= None
+	player_position = None
 	mouse_position  = Vector(0,0)
 
 	def __init__(self, screen, player):
-		self.player = player
+		self.player_position = player
 		self.screen = screen
 
 	def draw_railgun(self):
 		pygame.draw.line(
 			self.screen, 
 			self.railgun_color, 
-			self.player.current_position.to_table(), 
-			(self.player.current_position + (1260 * (self.mouse_position - self.player.current_position).norm())).to_table(), 
+			self.player_position.to_table(), 
+			(self.player_position + (1260 * (self.mouse_position - self.player_position).norm())).to_table(), 
 			self.railgun_thick
 			)					
 
 	def process_event(self, event):
 		self.shoot = True
 		self.mouse_position = (Vector(event.pos[0], event.pos[1]))
-		
+
 	def draw(self):
 		if(self.shoot):
 			self.draw_railgun()
 
-	def update(self, delta):
+	def update(self, delta, position):
+		self.player_position = position
 		if(self.shoot):
 			self.sum_delta += delta
 			if(self.sum_delta > 0.1):
@@ -203,7 +204,7 @@ class Player:
 		self.screen				= screen
 		self.move_behavior 		= PlayerMoveBehavior(position)
 		self.rotate_behavior	= PlayerRotateBehavior(position)
-		self.actions_behavior   = PlayerActions(screen, self)
+		self.actions_behavior   = PlayerActions(screen, position)
 		self.HP					= hp 		
 
 	def get_HP(self):
@@ -252,5 +253,5 @@ class Player:
 		self.__move(delta)
 		self.move_behavior.handle_orientation_key_press()	
 		self.handle_rotation()
-		self.actions_behavior.update(delta)
+		self.actions_behavior.update(delta, self.current_position)
 

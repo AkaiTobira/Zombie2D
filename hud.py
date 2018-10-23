@@ -2,6 +2,7 @@ import pygame
 
 from vector 	import Vector
 from colors    	import Colors, get_color
+from events     import Events
 
 class Cursor:
 
@@ -61,15 +62,15 @@ class HUD:
 	def render_text(self, text):
 		return self.font.render( str(text), True, self.color )
 
-	def calculate_cooldown(self):
-		offset = 0.2
-		if self.delta >= offset: 
-			self.delta -= offset
-		if self.delta < offset:
-			self.delta = self.cooldown	
+	#def calculate_cooldown(self):
+		#offset = 0.2
+		#if self.delta >= offset: 
+		#	self.delta -= offset
+		#if self.delta < offset:
+		#	self.delta = self.cooldown	
 
 	def draw_HP_amount(self):
-		self.calculate_cooldown()
+	#	self.calculate_cooldown()
 		self.screen.blit(self.render_text("HP : " + str(self.HP()) + " / " + str(self.HP_max)), self.hp_txt_position)
 
 	def draw_cooldown_amount(self):
@@ -92,7 +93,13 @@ class HUD:
 			self.delta / 100 * self.bar_width )			
 
 	def process_event(self, event):
+		if event.type == Events.SHOOT:
+			self.delta = 0
 		self.cursor.process_event(event)	
+
+	def update(self, delta):
+		self.delta += delta
+		pass
 
 	def draw(self):
 		self.cursor.draw()

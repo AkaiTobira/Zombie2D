@@ -152,6 +152,7 @@ class PlayerActions:
 		self.screen = screen
 
 	def draw_railgun(self):
+		rise_event( Events.SHOOT, {} )
 		pygame.draw.line(
 			self.screen, 
 			self.railgun_color, 

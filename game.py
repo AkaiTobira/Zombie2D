@@ -74,8 +74,9 @@ class Game:
 	#	print( self.delta_time_seconds )
 		
 		
-	def process_physic(self,delta):
+	def update(self,delta):
 		self.__calculate_delta_time()
 		self.unitManager.process_physic(delta)
+		self.HUD.update(delta)
 	#	print(delta)
 

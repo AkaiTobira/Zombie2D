@@ -141,27 +141,41 @@ class PlayerActions:
 	screen			= None
 	railgun_color	= get_color(Colors.YELLOW)
 	railgun_thick	= 2
+	sum_delta		= 0
+	shoot			= False
 
-	player_position = Vector(0,0)
+	player			= None
 	mouse_position  = Vector(0,0)
 
-	def __init__(self, screen, position):
-		self.player_position = position
+	def __init__(self, screen, player):
+		self.player = player
 		self.screen = screen
 
 	def draw_railgun(self):
-	#	print("drawing, od: " + str(self.player_position) + ", do: " + str(self.mouse_position))
-		
-		pygame.draw.line(
-			self.screen, 
-			self.railgun_color, 
-			self.player_position.to_table(), 
-			(self.player_position + (1260 * (self.mouse_position - self.player_position).norm())).to_table(), 
-			self.railgun_thick)			
+		print("drawing, od: " + str(self.player.current_position) + ", do: " + str(self.mouse_position))
+	
+	#	pygame.draw.line(
+	#		self.screen, 
+	#		self.railgun_color, 
+	#		self.player_position.to_table(), 
+	#		(self.player_position + (1260 * (self.mouse_position - self.player_position).norm())).to_table(), 
+	#		self.railgun_thick)	
+
+
+		pygame.draw.line(self.screen, get_color(Colors.YELLOW), self.player.current_position.to_table(), (self.player.current_position + (1260 * (self.mouse_position - self.player.current_position).norm())).to_table(), 2)					
 
 	def process_event(self, event):
+		self.shoot = True
 		self.mouse_position = (Vector(event.pos[0], event.pos[1]))
-		self.draw_railgun()
+		
+
+	def update(self, delta):
+		if(self.shoot):
+			self.sum_delta += delta
+			self.draw_railgun()
+			if(self.sum_delta > 1):
+				self.shoot = False
+				self.sum_delta = 0
 
 
 class Player:
@@ -192,7 +206,7 @@ class Player:
 		self.screen				= screen
 		self.move_behavior 		= PlayerMoveBehavior(position)
 		self.rotate_behavior	= PlayerRotateBehavior(position)
-		self.actions_behavior   = PlayerActions(screen, position)
+		self.actions_behavior   = PlayerActions(screen, self)
 		self.HP					= hp 		
 
 	def get_HP(self):
@@ -206,7 +220,7 @@ class Player:
 			self.screen,  
 			self.COLOR, 
 			self.graphic.to_draw(self.current_position), 
-			self.THICK )	
+			self.THICK )		
 
 	#	pygame.draw.line(self.screen, get_color(Colors.YELLOW), self.current_position.to_table(), (self.current_position + (1260 * (self.mouse_point - self.current_position).norm())).to_table(), 2)	
 			
@@ -243,4 +257,5 @@ class Player:
 		self.__move(delta)
 		self.move_behavior.handle_orientation_key_press()	
 		self.handle_rotation()
+		self.actions_behavior.update(delta)
 

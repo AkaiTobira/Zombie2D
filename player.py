@@ -152,7 +152,7 @@ class PlayerActions:
 		self.screen = screen
 
 	def draw_railgun(self):
-		print("drawing, od: " + str(self.player.current_position) + ", do: " + str(self.mouse_position))
+	#	print("drawing, od: " + str(self.player.current_position) + ", do: " + str(self.mouse_position))
 	
 	#	pygame.draw.line(
 	#		self.screen, 
@@ -161,22 +161,25 @@ class PlayerActions:
 	#		(self.player_position + (1260 * (self.mouse_position - self.player_position).norm())).to_table(), 
 	#		self.railgun_thick)	
 
-
+	#	print(self.player.current_position.to_table(), (self.player.current_position + (1260 * (self.mouse_position - self.player.current_position).norm())))
 		pygame.draw.line(self.screen, get_color(Colors.YELLOW), self.player.current_position.to_table(), (self.player.current_position + (1260 * (self.mouse_position - self.player.current_position).norm())).to_table(), 2)					
 
 	def process_event(self, event):
 		self.shoot = True
 		self.mouse_position = (Vector(event.pos[0], event.pos[1]))
 		
+	def draw(self):
+		if(self.shoot):
+			self.draw_railgun()
+			self.shoot = False
 
 	def update(self, delta):
 		if(self.shoot):
 			self.sum_delta += delta
-			self.draw_railgun()
+			
 			if(self.sum_delta > 1):
 				self.shoot = False
 				self.sum_delta = 0
-
 
 class Player:
 
@@ -220,7 +223,8 @@ class Player:
 			self.screen,  
 			self.COLOR, 
 			self.graphic.to_draw(self.current_position), 
-			self.THICK )		
+			self.THICK )	
+		self.actions_behavior.draw()
 
 	#	pygame.draw.line(self.screen, get_color(Colors.YELLOW), self.current_position.to_table(), (self.current_position + (1260 * (self.mouse_point - self.current_position).norm())).to_table(), 2)	
 			

@@ -60,17 +60,9 @@ class HUD:
 		return max(0, self.player.get_HP())	
 
 	def render_text(self, text):
-		return self.font.render( str(text), True, self.color )
-
-	#def calculate_cooldown(self):
-		#offset = 0.2
-		#if self.delta >= offset: 
-		#	self.delta -= offset
-		#if self.delta < offset:
-		#	self.delta = self.cooldown	
+		return self.font.render( str(text), True, self.color)	
 
 	def draw_HP_amount(self):
-	#	self.calculate_cooldown()
 		self.screen.blit(self.render_text("HP : " + str(self.HP()) + " / " + str(self.HP_max)), self.hp_txt_position)
 
 	def draw_cooldown_amount(self):
@@ -99,8 +91,7 @@ class HUD:
 
 	def update(self, delta):
 		self.delta += delta
-		pass
-
+ 
 	def draw(self):
 		self.cursor.draw()
 
@@ -109,4 +100,3 @@ class HUD:
 
 		self.draw_cooldown_amount()
 		self.draw_cooldown_bar()
-

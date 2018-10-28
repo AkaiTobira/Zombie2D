@@ -89,3 +89,16 @@ class Vector:
 
 	def perp(self):
 		return self.rotate(math.pi/2)
+
+	def __lt__(self, other):
+		return self.len() < other.len() 
+
+	def to_local_space(self,v):
+		angle = self.angle_between(Vector(self.x,0))
+		return Vector(  (v.x-self.x) * math.cos(angle) + (v.y-self.y)* math.sin(angle),
+					-(v.x-self.x) * math.sin(angle) + (v.y-self.y)* math.cos(angle))
+    
+	def to_global_space(self, v):
+		angle = self.angle_between(Vector(self.x,0))
+		return Vector(  v.x * math.cos(angle) - v.y * math.sin(angle) + self.x,
+						v.x * math.sin(angle) + v.y * math.cos(angle) + self.y)

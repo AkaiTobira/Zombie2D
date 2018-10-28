@@ -196,7 +196,7 @@ class Player:
 	screen_size       = Vector(0,0)
 	graphic 		  = Triangle(0)
 
-	speed             = Vector(20.0,20.0)
+	speed             = Vector(75.0,75.0)
 
 	def __init__(self, position, screen, hp):
 		self.graphic            = Triangle( 10 )

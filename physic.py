@@ -4,7 +4,8 @@ import math
 from vector import Vector
 from random import randint
 from events import Events, rise_event
-from colors   import Colors, get_color
+from colors import Colors, get_color
+from ai     import *
 
 class UnitManager:
 	obstacle_list = []
@@ -116,6 +117,8 @@ class EnemySteeringBehaviours:
 	def __kill(self):
 		pass
 
+
+
 class MoveSystem:
 	obstacle_list = []
 	enemy_list    = []
@@ -131,40 +134,12 @@ class MoveSystem:
 			if position.distance_to(unit.current_position).len() < unit.RADIUS:
 				return unit
 		return None
-
-	def __run_before_player_destination(self ):
-		destination = Vector( randint(0,1024), randint(0, 720) )
-
-		while destination.distance_to(self.player.current_position).len() < 300:
-			destination = Vector( randint(0,1024), randint(0, 720) )
-
-		return destination
 	
 	def update(self, delta):
-		for unit in self.enemy_list:
-			if unit.state == "Wait":
+		for enemy in self.enemy_list:
+			enemy.ai.update(delta, self.player)
+			enemy.update(delta)
 
-				if randint(0,500) < 25 :
-					destination = self.__run_before_player_destination()
-					unit.move_to(destination)
-			elif unit.state == "Move":
-				
-				unit_far   = self.__line_intersect( unit.seing_ahead )   
-				unit_short = self.__line_intersect( unit.seing_ahead_short )
-			
-				force = Vector(0.0,0.0)
-			
-				if unit_far == None:
-					if unit_short == None:
-						pass
-					else:
-						force = (unit.seing_ahead - unit_short.current_position).norm() * 10						
-				else:
-					force = (unit.seing_ahead - unit_far.current_position).norm() * 10
-
-				unit.apply_force(force)
-				unit.update(delta)
-				
 		self.player.update(delta)
 					
 class CollisionSystem:
@@ -225,4 +200,4 @@ class CollisionSystem:
 
 	def update(self, delta):
 		self.__detect_collision_for_player(delta)
-		self.__detect_collision_for_enemies(delta)
+	#	self.__detect_collision_for_enemies(delta)

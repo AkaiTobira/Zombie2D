@@ -72,7 +72,8 @@ class ObjectsGenerator:
 		
 	def generate_obstacles(self):	
 		for i in range(self.number_of_obstacles):
-			self.obstacle_list.append(Obstacle(self.screen,self.resulution,self.id_counter))
+			obs = Obstacle(self.screen,self.resulution,self.id_counter, self.obstacle_list)
+			self.obstacle_list.append(obs)
 			self.id_counter += 1
 		
 	def create_objects(self):

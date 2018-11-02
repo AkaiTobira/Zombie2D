@@ -35,12 +35,12 @@ class Enemy:
 	
 	state       = "Wait"
 	
-	def __move(self, velocity ,delta):
-		self.previous_position      = self.current_position
+	def __move(self, velocity, delta):
+		self.previous_position     = self.current_position
 		self.current_position      += ( velocity*delta )*self.speed
 	
 	
-	def __init__(self,  screen, screen_size, id):
+	def __init__(self, screen, screen_size, id):
 
 		self.current_screen   = screen
 		self.screen_size      = screen_size
@@ -51,7 +51,7 @@ class Enemy:
 		self.id               = id
 		
 		self.distance         = Vector(0.0,0.0)
-		self.accumulate        = Vector(0.0,0.0)
+		self.accumulate       = Vector(0.0,0.0)
 	
 	
 	def draw(self):
@@ -194,4 +194,4 @@ class Enemy2:
 	def draw(self):
 		pygame.draw.circle(self.current_screen, self.COLOR, self.current_position.to_table(), self.RADIUS, self.THICKNESS )
 
-		pygame.draw.line(self.current_screen, get_color(Colors.RED),self.current_position.to_table(), ( self.current_position + self.velocity).to_table(), 2 )
+	#	pygame.draw.line(self.current_screen, get_color(Colors.RED),self.current_position.to_table(), ( self.current_position + self.velocity).to_table(), 2 )

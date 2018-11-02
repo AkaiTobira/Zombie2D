@@ -3,7 +3,7 @@ import pygame
 
 from obstacle  import Obstacle as Ob 
 from vector    import Vector 
-from physic    import UnitManager
+from physics   import UnitManager
 from generator import ObjectsGenerator, Sandbox
 from colors    import Colors, get_color
 from hud       import HUD
@@ -76,7 +76,7 @@ class Game:
 		
 	def update(self,delta):
 		self.__calculate_delta_time()
-		self.unitManager.process_physic(delta)
+		self.unitManager.process_physics(delta)
 		self.HUD.update(delta)
 	#	print(delta)
 

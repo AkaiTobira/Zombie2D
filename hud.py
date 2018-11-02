@@ -2,7 +2,7 @@ import pygame
 
 from vector 	import Vector
 from colors    	import Colors, get_color
-from events     import Events
+from events     import Events, rise_event
 
 class Cursor:
 
@@ -90,7 +90,10 @@ class HUD:
 		self.cursor.process_event(event)	
 
 	def update(self, delta):
-		self.delta += delta
+		self.delta += 70 * delta
+		if self.delta > self.cooldown:
+			self.delta = self.cooldown
+			rise_event(Events.IS_READY, {})
  
 	def draw(self):
 		self.cursor.draw()

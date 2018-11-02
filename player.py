@@ -143,12 +143,13 @@ class PlayerActions:
 	railgun_thick	= 2
 	sum_delta		= 0
 	shoot			= False
+	is_ready		= True
 
 	player_position = None
 	mouse_position  = Vector(0,0)
 
-	def __init__(self, screen, player):
-		self.player_position = player
+	def __init__(self, screen, position):
+		self.player_position = position
 		self.screen = screen
 
 	def draw_railgun(self):
@@ -158,16 +159,22 @@ class PlayerActions:
 			self.railgun_color, 
 			self.player_position.to_table(), 
 			(self.player_position + (1260 * (self.mouse_position - self.player_position).norm())).to_table(), 
-			self.railgun_thick
-			)					
+			self.railgun_thick)					
 
 	def process_event(self, event):
-		self.shoot = True
-		self.mouse_position = (Vector(event.pos[0], event.pos[1]))
+		if event.type == Events.IS_READY:
+			self.is_ready = True
 
+		elif event.type == pygame.MOUSEBUTTONDOWN:
+			self.shoot = True
+			self.mouse_position = (Vector(event.pos[0], event.pos[1]))
+			self.is_ready = False
+
+		
 	def draw(self):
-		if(self.shoot):
-			self.draw_railgun()
+		if self.shoot:
+			if self.is_ready:
+				self.draw_railgun()
 
 	def update(self, delta, position):
 		self.player_position = position
@@ -196,10 +203,10 @@ class Player:
 	screen_size       = Vector(0,0)
 	graphic 		  = Triangle(0)
 
-	speed             = Vector(75.0,75.0)
+	speed             = Vector(100.0,100.0)
 
 	def __init__(self, position, screen, hp):
-		self.graphic            = Triangle( 10 )
+		self.graphic            = Triangle( 12 )
 		self.current_position  	= position
 		self.previous_position 	= position
 		self.screen				= screen
@@ -230,8 +237,7 @@ class Player:
 				self.current_position  = Vector(randint(0,self.screen_size.x), randint(0,self.screen_size.y))
 				self.previous_position = self.current_position		
  	
-		if event.type == pygame.MOUSEBUTTONDOWN:
-			self.actions_behavior.process_event(event)
+		self.actions_behavior.process_event(event)
 
 		if event.type == pygame.MOUSEMOTION:
 			self.mouse_point = (Vector(event.pos[0], event.pos[1]))

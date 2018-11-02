@@ -14,6 +14,7 @@ from enum import IntEnum
 class Events(IntEnum):
 	COLLIDE        = 25
 	SHOOT          = 26
+	IS_READY	   = 27
 	
 def rise_event(event_type, description):
 	pygame.event.post(pygame.event.Event(int(event_type), description))

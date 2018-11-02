@@ -50,7 +50,7 @@ class UnitManager:
 			self.player.process_event(event)
 		pass
 		
-	def process_physic(self,delta):
+	def process_physics(self,delta):
 		self.mv_system.update(delta)
 		self.cl_system.update(delta)
 

@@ -73,6 +73,10 @@ class Vector:
 	def trunc(self, v):
 		return self.norm() * v.len()
 		
+	def ttrunc(self,v):
+		return Vector( v.x if abs(self.x) > v.x else abs(self.x),
+					   v.y if abs(self.y) > v.y else abs(self.y)) * self.sign()
+
 	def rotate(self, angle, axis = None ):
 		if axis == None:
 			axis = Vector(0.0,0.0) 

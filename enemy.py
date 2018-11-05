@@ -188,14 +188,11 @@ class Enemy2:
 		pass
 
 	def update(self,delta):
-		self.previous_position = self.current_position
-		
+		self.previous_position = self.current_position	
 		self.current_position += self.velocity * delta
 		
 
 	def draw(self):
-		print( self.COLOR, self.current_position.to_table(), self.RADIUS, self.THICKNESS)
-		print( self.velocity)
 		pygame.draw.circle(self.current_screen, self.COLOR, self.current_position.to_table(), self.RADIUS, self.THICKNESS )
 
 	#	pygame.draw.line(self.current_screen, get_color(Colors.RED),self.current_position.to_table(), ( self.current_position + self.velocity).to_table(), 2 )

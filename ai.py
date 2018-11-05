@@ -119,6 +119,10 @@ class StateSteeringBehaviour(State):
     def execute(self, owner, player):
         stering_force = self.calculate_steering(owner, player)
         owner.velocity = stering_force / owner.m
+
+        if abs(owner.velocity.x) > owner.max_speed.x: owner.velocity.x = sign(owner.velocity.x) * owner.max_speed.x
+        if abs(owner.velocity.y) > owner.max_speed.y: owner.velocity.y = sign(owner.velocity.y) * owner.max_speed.y
+
         pass
 
 
@@ -156,6 +160,10 @@ class SeekState(State):
     def execute(self, owner, player):
         owner.velocity = self.arrival(owner, player.current_position)/owner.m + owner.velocity
         distance       = player.current_position.distance_to(owner.current_position)
+
+        if abs(owner.velocity.x) > owner.max_speed.x: owner.velocity.x = sign(owner.velocity.x) * owner.max_speed.x
+        if abs(owner.velocity.y) > owner.max_speed.y: owner.velocity.y = sign(owner.velocity.y) * owner.max_speed.y
+
         if distance.len() < 20:
             owner.ai.change_state(FleeState())
 
@@ -172,12 +180,16 @@ class PursitState(State):
     def execute(self, owner, player):
 
         distance = owner.current_position.distance_to(player.current_position)
-        velocity =  (player.current_position - owner.current_position).norm() * owner.max_speed     - owner.velocity
+        owner.velocity =  (player.current_position - owner.current_position).norm() * owner.max_speed     - owner.velocity
 
-        owner.velocity = min( velocity , distance ) 
+        if abs(owner.velocity.x) > owner.max_speed.x: owner.velocity.x = sign(owner.velocity.x) * owner.max_speed.x
+        if abs(owner.velocity.y) > owner.max_speed.y: owner.velocity.y = sign(owner.velocity.y) * owner.max_speed.y
 
-        if distance.len() < 20:
+        if distance.len() < 30:
             owner.ai.change_state(FleeState())
+
+def sign(x):
+    return 1 if x > 0 else 0 if x == 0 else -1 
 
 class FleeState(State):
     state = "Flee"
@@ -190,6 +202,10 @@ class FleeState(State):
 
     def execute(self, owner, player):
         owner.velocity =  (( ( owner.current_position - player.current_position).norm() * owner.max_speed  - owner.velocity )/owner.m ) + owner.velocity
+
+        if abs(owner.velocity.x) > owner.max_speed.x: owner.velocity.x = sign(owner.velocity.x) * owner.max_speed.x
+        if abs(owner.velocity.y) > owner.max_speed.y: owner.velocity.y = sign(owner.velocity.y) * owner.max_speed.y
+        
         distance = owner.current_position.distance_to(player.current_position)
 
         if distance.len() > 300:

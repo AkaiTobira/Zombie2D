@@ -3,6 +3,7 @@ import pygame
  
 from time     import sleep
 from game     import Game 
+
  
 def main():
 
@@ -12,10 +13,12 @@ def main():
     #pygame.display.set_icon(logo)
 	while game.is_running():
 		delta = clock.tick()/1000
+	#	sumi = delta
 		game.draw()
 		game.update(delta)
 		game.process_input()
-	#	while delta <= 1/60:
+	#	while sumi <= 1/45:
+	#		sumi += clock.tick()/1000
 	#		sleep(0.0001)
      
 if __name__=="__main__":

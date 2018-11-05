@@ -200,4 +200,33 @@ class CollisionSystem:
 
 	def update(self, delta):
 		self.__detect_collision_for_player(delta)
+		self.update2()
 	#	self.__detect_collision_for_enemies(delta)
+
+
+	def update2(self):
+		for unit in self.enemy_list:
+			closest_obstacle        = None
+			local_obstacle_position = Vector(0,0)
+			dist_to_the_closest     = 2000
+
+			for obstacle in self.obstacle_list:
+				if obstacle.current_position.distance_to(unit.current_position).len() > 50: continue
+				local_position = unit.current_position.to_local_space(obstacle.current_position)
+				if local_position.x < 0: continue
+				expanded_radius = unit.RADIUS + obstacle.RADIUS
+				if abs(local_position.y) > expanded_radius: continue
+				sqrPart = sqrt(expanded_radius**2 - local_position.y**2)
+				ip = local_position.x - sqrPart if local_position.x - sqrPart > 0 else local_position.x + sqrPart
+
+				if ip < dist_to_the_closest:
+					dist_to_the_closest     = ip
+					closest_obstacle        = obstacle
+					local_obstacle_position = local_position
+
+			unit.closests = [closest_obstacle, local_obstacle_position]
+			print( unit.closests[1], unit.current_position.to_global_space(unit.closests[1]))
+
+			
+
+				

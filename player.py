@@ -188,6 +188,7 @@ class Player:
 	move_behavior	  = None
 	rotate_behavior   = None
 	actions_behavior  = None
+	obstacle_list     = []
 
 	current_position  = Vector(0,0)
 	previous_position = Vector(0,0)
@@ -198,7 +199,7 @@ class Player:
 
 	speed             = Vector(75.0,75.0)
 
-	def __init__(self, position, screen, hp):
+	def __init__(self, position, screen, hp, obstacles):
 		self.graphic            = Triangle( 10 )
 		self.current_position  	= position
 		self.previous_position 	= position
@@ -207,6 +208,8 @@ class Player:
 		self.rotate_behavior	= PlayerRotateBehavior(position)
 		self.actions_behavior   = PlayerActions(screen, position)
 		self.HP					= hp 		
+
+		self.obstacle_list      = obstacles
 
 	def get_HP(self):
 		return self.HP	

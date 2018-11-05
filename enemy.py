@@ -168,6 +168,8 @@ class Enemy2:
 
 	priorities        = [0.33, 0.33, 0.33]
 
+	closests          = [None, Vector(0,0)]
+
 	def __init__(self,  screen, screen_size, id):
 
 		self.current_screen   = screen
@@ -182,7 +184,7 @@ class Enemy2:
 		self.accumulate       = Vector(0.0,0.0)
 
 		self.ai 			  = FiniteStateMachine(self)
-		self.ai.set_current_state(SteringWander())
+		self.ai.set_current_state(SteringChase())
 
 	def process_event(self, event):
 		pass

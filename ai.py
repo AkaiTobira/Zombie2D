@@ -1,5 +1,6 @@
 from random import randint, uniform
 from vector import Vector
+from math   import *
 
 class FiniteStateMachine:
     current_state  = None
@@ -39,6 +40,64 @@ class State:
     def __eq__(self,state):
         return state == self.state
 
+
+class SteringChase(State):
+    state = "Wander"
+
+    max_stering_force = Vector(22,22)
+    w_target          = Vector(0,0)
+
+    def avoid(self, owner, player) :
+        steering_force          = Vector(0,0)        
+            
+        if  owner.closests[0] :
+
+            multiplier      = 1.0 + owner.velocity.len() - owner.closests[1].x / owner.velocity.len()
+            steering_force.x = (owner.closests[0].RADIUS - owner.closests[1].x) * 0.2
+            steering_force.y = (owner.closests[0].RADIUS - owner.closests[1].y) * multiplier
+
+        #    print(steering_force)
+                
+            return owner.current_position.to_global_space(steering_force)
+
+        return Vector(0,0)
+
+
+    
+    def seek(self, owner, target):
+        velocity =  (target- owner.current_position).norm() * owner.max_speed     - owner.velocity
+        return velocity
+
+    def arrival(self, owner, target):
+        distance = owner.current_position.distance_to(target)
+        velocity =  (target- owner.current_position).norm() * owner.max_speed     - owner.velocity
+        return min( velocity , distance ) 
+
+    def calculate_steering(self, owner, player):
+        stering = self.seek(owner, player.current_position)          *  owner.priorities[0]
+    #    l = stering.len()
+    #    stering  = self.wander(owner,player)       *  owner.priorities[0]
+        stering += self.avoid(owner, player)        *  owner.priorities[1]
+    #   stering += self.separation(player)   *  owner.priorities[2]
+    #    stering = stering.norm() * owner.max_speed
+
+        return stering #.norm() * l
+
+    def enter(self, owner):
+        pass
+
+    def exit(self, owner):
+        pass
+
+    def execute(self, owner, player):
+        stering_force = self.calculate_steering(owner, player)
+        owner.velocity = stering_force / owner.m
+
+      #  if owner.current_position.distance_to(player.current_position).len() < 200:
+      #      owner.ai.change_state(SeekState())
+
+        pass
+
 class SteringWander(State):
     state = "Wander"
 
@@ -54,6 +113,39 @@ class SteringWander(State):
         target_local  = self.w_target + Vector(w_distance, 0) 
         return self.seek(owner, owner.current_position.to_global_space(target_local))
 
+    def avoid(self, owner, player) :
+        steering_force          = Vector(0,0)        
+        dist_to_the_closest     = 0
+        closest_obstacle        = None
+        local_obstacle_position = Vector(0,0)
+            
+
+        for obstacle in player.obstacle_list:
+            if obstacle.current_position.distance_to(owner.current_position).len() > 100: continue
+            
+            local_position = owner.current_position.to_local_space(obstacle.current_position)
+            if local_position.x < 0: continue
+            
+            expanded_radius = owner.RADIUS + obstacle.RADIUS
+            if abs(local_position.y) > expanded_radius: continue
+            
+            sqrPart = sqrt(expanded_radius**2 - local_position.y**2)
+            ip = local_position.x - sqrPart if local_position.x - sqrPart > 0 else local_position.x + sqrPart
+            
+            if ip < dist_to_the_closest:
+                dist_to_the_closest     = ip
+                closest_obstacle        = obstacle
+                local_obstacle_position = local_position
+    
+        if closest_obstacle :
+            multiplier      = 1.0 + owner.velocity.len() - local_obstacle_position.x / owner.velocity.len()
+            steering_force.x = (closest_obstacle.r - local_obstacle_position.x) * 0.2
+            steering_force.y = (closest_obstacle.r - local_obstacle_position.y) * multiplier
+                
+            return owner.current_position.to_global_space(steering_force)
+
+        return Vector(0,0)
+
     def seek(self, owner, target):
         velocity =  (target- owner.current_position).norm() * owner.max_speed     - owner.velocity
         return velocity
@@ -65,7 +157,7 @@ class SteringWander(State):
 
     def calculate_steering(self, owner, player):
         stering  = self.wander(owner,player)       *  owner.priorities[0]
-    #   stering += self.avoid(player)        *  owner.priorities[1]
+        stering += self.avoid(owner, player)        *  owner.priorities[1]
     #   stering += self.separation(player)   *  owner.priorities[2]
         return stering
 
@@ -79,8 +171,8 @@ class SteringWander(State):
         stering_force = self.calculate_steering(owner, player)
         owner.velocity = stering_force / owner.m
 
-        if owner.current_position.distance_to(player.current_position).len() < 200:
-            owner.ai.change_state(SeekState())
+      #  if owner.current_position.distance_to(player.current_position).len() < 200:
+      #      owner.ai.change_state(SeekState())
 
         pass
 

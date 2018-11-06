@@ -4,7 +4,9 @@ from enum import Enum
 class Colors(Enum):
 	LIGHT_BLUE   = (24,191,158)
 	LIGHT_PURPLE = (159,133,188)
+	LIGHT_PURPL2 = (26,34,53)	
 	LIGHT_RED    = (255,21,82)
+	LIGHTER_RED  = (74,28,55)
 	RED          = (255,0,0)
 	GREEN        = (0,255,0)
 	YELLOW       = (255,255,0)
@@ -36,4 +38,8 @@ def get_color( color ):
 	if color == Colors.WHITE:
 		return (255,255,255)
 	if color == Colors.BLUE_BAR:
-		return (50,160,255)				
+		return (50,160,255)		
+	if color == Colors.LIGHTER_RED:
+		return (74,28,55)	
+	if color == Colors.LIGHT_PURPL2:
+		return (26,34,53)					

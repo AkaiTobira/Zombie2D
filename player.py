@@ -154,12 +154,27 @@ class PlayerActions:
 
 	def draw_railgun(self):
 		rise_event( Events.SHOOT, {} )
+		
+		pt_from = self.player_position
+		pt_to = self.player_position + (1260 * (self.mouse_position - self.player_position).norm())
+	#	print("from: " + str(pt_from) + ", to: " + str(pt_to))
+		self.lin_function(pt_from, pt_to)
+		
 		pygame.draw.line(
 			self.screen, 
 			self.railgun_color, 
-			self.player_position.to_table(), 
-			(self.player_position + (1260 * (self.mouse_position - self.player_position).norm())).to_table(), 
-			self.railgun_thick)					
+			pt_from.to_table(), 
+			pt_to.to_table(), 
+			self.railgun_thick)	
+
+
+	def lin_function(self, pt_from, pt_to):
+		lin_fun = Vector(0,0) 
+		lin_fun.x = (pt_from.y - pt_to.y) / (pt_from.x - pt_to.x)
+		lin_fun.y = pt_from.y - lin_fun.x * pt_from.x
+	#	print("function: " + str(lin_fun))
+		return lin_fun # zwraca parametry a i b funkcji
+	
 
 	def process_event(self, event):
 		if event.type == Events.IS_READY:
@@ -190,7 +205,8 @@ class Player:
 	HP				  = 0	
 	THICK  			  = 3
 	RADIUS			  = 10
-	COLOR  			  = get_color(Colors.LIGHT_RED)
+	COLOR_OUT		  = get_color(Colors.LIGHT_RED)
+	COLOR_IN		  = get_color(Colors.LIGHTER_RED)
 	screen			  = None
 	move_behavior	  = None
 	rotate_behavior   = None
@@ -222,12 +238,19 @@ class Player:
 		self.HP -= amount
 
 	def draw(self):
+
+		self.actions_behavior.draw()		
+
 		pygame.draw.polygon (
 			self.screen,  
-			self.COLOR, 
+			self.COLOR_IN, 
+			self.graphic.to_draw(self.current_position))
+
+		pygame.draw.polygon (
+			self.screen,  
+			self.COLOR_OUT, 
 			self.graphic.to_draw(self.current_position), 
-			self.THICK )	
-		self.actions_behavior.draw()
+			self.THICK )
 
 	def process_event(self, event):
 		if event.type == Events.COLLIDE:

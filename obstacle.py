@@ -6,15 +6,15 @@ from vector   import Vector
 from colors   import Colors, get_color
 
 class Obstacle:
-	RADIUS = 0
-	COLOR  = get_color(Colors.LIGHT_PURPLE)
-	THICK  = 2
+	RADIUS 			 = 0
+	COLOR_OUT 		 = get_color(Colors.LIGHT_PURPLE)
+	THICK  			 = 2
 
-	id = -1
-	state = "Const"
+	id 			 	 = -1
+	state 			 = "Const"
 
-	color = (0,0,0)
-	thick = 0.0
+	color 			 = (0,0,0)
+	thick 			 = 0.0
 	current_screen   = None
 	screen_size		 = Vector(0,0) 
 	current_position = Vector(0,0)
@@ -22,7 +22,6 @@ class Obstacle:
 	
 	
 	def __init__(self, screen, screen_size, id, obs_list):
-		self.COLOR  = get_color(Colors.LIGHT_PURPLE)
 		self.RADIUS = randint(15,35) 
 		self.current_screen   = screen
 		self.screen_size = screen_size
@@ -58,7 +57,9 @@ class Obstacle:
 
 
 	def draw(self):
-		pygame.draw.circle(self.current_screen, self.COLOR, self.current_position.to_table(), self.RADIUS, self.THICK )
+	#	pygame.draw.circle(self.current_screen, get_color(Colors.LIGHT_PURPL2), self.current_position.to_table(), self.RADIUS)
+
+		pygame.draw.circle(self.current_screen, self.COLOR_OUT, self.current_position.to_table(), self.RADIUS, self.THICK )
 		
 	def process_event(self,event):
 		pass

@@ -90,7 +90,7 @@ class HUD:
 		self.cursor.process_event(event)	
 
 	def update(self, delta):
-		self.delta += 70 * delta
+		self.delta += 90 * delta
 		if self.delta > self.cooldown:
 			self.delta = self.cooldown
 			rise_event(Events.IS_READY, {})

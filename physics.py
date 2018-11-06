@@ -65,68 +65,16 @@ class UnitManager:
 		self.zombie_counter -= 1
 		pass		
 	
-class EnemySteeringBehaviours:
-	maxSpeed         = Vector(2,2)
-	mass             = 1
-	current_position = Vector(0,0)
-	velocity         = Vector(0,0)
-	target_pos       = Vector(0,0)
-
-	head             = Vector(0,0)
-	side             = Vector(0,0)
-
-	def __init__(self, current_position):
-		self.current_position = current_position
-		self.head             = Vector(0,1).norm()
-		self.side             = self.head.perp()
-
-	def __get_steering(self):
-		return self.__seek()
-
-	def calculate_behaviour(self):
-		steering      = self.__get_steering()
-		acceleration  = steering / self.mass
-		self.velocity += acceleration * 0.018
-		self.velocity = self.velocity.trunc(self.maxSpeed)
-
-		self.head     = self.velocity.norm() 
-		self.side     = self.head.perp()
-		return self.velocity
-
-	def set_target(self, target):
-		self.target_pos    =  target 
-
-	def __seek(self):
-		return (self.target_pos - self.current_position).norm() * self.maxSpeed - self.velocity
-
-	def __flee(self):
-		return (self.current_position - self.target_pos ).norm() * self.maxSpeed - self.velocity
-
-	def __arrive(self):
-		pass
-
-	def __wander(self):
-		pass
-	
-	def __hide(self):
-		pass
-
-	def __group(self):
-		pass
-
-	def __kill(self):
-		pass
-
-
-
 class MoveSystem:
 	obstacle_list = []
 	enemy_list    = []
+	whole_objcts  = []
 	player        = None
 	
 	def __init__(self, units, player):
 		self.obstacle_list = units[1]
 		self.enemy_list    = units[0] 
+		self.whole_objcts  = units[0] + units[1]
 		self.player        = player
 
 	def __line_intersect(self, position):
@@ -144,6 +92,7 @@ class MoveSystem:
 					
 class CollisionSystem:
 	enemy_list    = []
+	whole_objcts  = []
 	obstacle_list = []
 	player      = None
 	ZERO_VECTOR = Vector(0,0)
@@ -155,6 +104,7 @@ class CollisionSystem:
 		self.obstacle_list = units[1] 
 		self.player      = player
 		self.screen_size = Vector( screen_size[0], screen_size[1] ) 
+		self.whole_objcts  = units[0] + units[1]
 	
 	def __is_colliding(self, unit, unit_2, distance):
 		if unit == unit_2: return False
@@ -200,4 +150,32 @@ class CollisionSystem:
 
 	def update(self, delta):
 		self.__detect_collision_for_player(delta)
+		self.__predict_collisions(delta)
 	#	self.__detect_collision_for_enemies(delta)
+
+
+	def __predict_collisions(self,d):
+		for unit in self.enemy_list:
+			unit.closest_obstacle = self.__get_clossest_obstacle(unit,d)
+
+	def __get_clossest_obstacle(self,unit,delta):     
+		dist_to_the_closest     = 9999999999
+		closest_obstacle        = None
+					
+		for obstacle in self.whole_objcts:
+			if obstacle.current_position.distance_to(unit.current_position).len() > 30: continue
+			
+			local_position = unit.current_position.to_local_space(obstacle.current_position)
+			if local_position.x < 0: continue
+			
+			expanded_radius = unit.RADIUS + obstacle.RADIUS
+			if abs(local_position.y) > expanded_radius: continue
+			
+			sqrPart = math.sqrt(expanded_radius**2 - local_position.y**2)
+			ip = local_position.x - sqrPart if local_position.x - sqrPart > 0 else local_position.x + sqrPart
+			
+			if ip < dist_to_the_closest:
+				dist_to_the_closest     = ip
+				closest_obstacle        = obstacle
+		
+		return closest_obstacle

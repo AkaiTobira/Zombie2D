@@ -165,6 +165,7 @@ class Enemy2:
 	ai                = None
 	max_speed         = Vector(100,100)
 	m                 = 1
+	closest_obstacle  = None
 
 	priorities        = [0.33, 0.33, 0.33]
 
@@ -190,7 +191,6 @@ class Enemy2:
 	def update(self,delta):
 		self.previous_position = self.current_position	
 		self.current_position += self.velocity * delta
-		
 
 	def draw(self):
 		pygame.draw.circle(self.current_screen, self.COLOR, self.current_position.to_table(), self.RADIUS, self.THICKNESS )

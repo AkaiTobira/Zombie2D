@@ -65,28 +65,9 @@ class SteringWander(State):
         return min( velocity , distance ) 
 
     def avoid(self, owner, target):
-        #TODO
         if owner.closest_obstacle and not owner.velocity.is_zero_len() :
             av_f = owner.ahead - owner.closest_obstacle.current_position                        
             return av_f.norm() * 40
-
-         #   print( ahead )
-
-        #    t = owner.current_position + owner.velocity
-        #    avoid_force = t - owner.closest_obstacle.current_position
-        #    return avoid_force.norm() * owner.max_speed * 22
-
-         #   print( target.current_position )
-
-         #   local_obstacle_position = owner.current_position.to_local_space(owner.closest_obstacle.current_position)         
-         #   multipllier      = 1.0 + (owner.velocity.len() - local_obstacle_position.x ) / owner.velocity.len() 
-            
-          #  stering_force.x = (owner.closest_obstacle.RADIUS - local_obstacle_position.x) * 0.8
-          #  stering_force.y = (owner.closest_obstacle.RADIUS - local_obstacle_position.y) * multipllier
-            
-        #    print( stering_force, local_obstacle_position, multipllier )
-         #   return stering_force.to_global_space(owner.current_position) * 9
-        #    return owner.current_position.to_global_space(stering_force) owner.current_position.to_global_space(stering_force)#
         return Vector(0,0)
 
 

@@ -162,8 +162,10 @@ class CollisionSystem:
 		dist_to_the_closest     = 9999999999
 		closest_obstacle        = None
 
-		ahead  = unit.current_position + unit.velocity.norm() * 36
-		ahead2 = unit.current_position + unit.velocity.norm() * 18
+		dynamic = unit.velocity.len() / unit.max_speed.len()
+		
+		ahead  = unit.current_position + unit.velocity.norm() * dynamic 
+		ahead2 = unit.current_position + unit.velocity.norm() * dynamic
 
 
 		for obstacle in self.whole_objcts:

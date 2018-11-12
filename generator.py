@@ -36,7 +36,7 @@ class Sandbox:
 		offset = Vector((self.resulution/2).x, 150)
 
 		for i in range(self.number_of_obstacles):
-			self.obstacle_list.append(Obstacle(self.screen,self.resulution,self.id_counter))
+			self.obstacle_list.append(Obstacle(self.screen,self.resulution,self.id_counter,self.obstacle_list))
 			self.obstacle_list[i].current_position = Vector( offset.x, offset.y*i ) 
 			self.id_counter += 1
 		

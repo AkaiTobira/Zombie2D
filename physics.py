@@ -163,7 +163,8 @@ class CollisionSystem:
 		closest_obstacle        = None
 					
 		for obstacle in self.whole_objcts:
-			if obstacle.current_position.distance_to(unit.current_position).len() > 30: continue
+			if unit == obstacle : continue
+			if obstacle.current_position.distance_to(unit.current_position).len() > 25: continue
 			
 			local_position = unit.current_position.to_local_space(obstacle.current_position)
 			if local_position.x < 0: continue

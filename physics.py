@@ -163,8 +163,8 @@ class CollisionSystem:
 		closest_obstacle        = None
 
 		dynamic = unit.velocity.len() / unit.max_speed.len()
-		
-		ahead  = unit.current_position + unit.velocity.norm() * dynamic 
+
+		ahead  = unit.current_position + unit.velocity.norm() * 30
 		ahead2 = unit.current_position + unit.velocity.norm() * dynamic
 
 

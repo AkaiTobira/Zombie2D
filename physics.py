@@ -158,13 +158,43 @@ class CollisionSystem:
 		for unit in self.enemy_list:
 			unit.closest_obstacle = self.__get_clossest_obstacle(unit,d)
 
-	def __get_clossest_obstacle(self,unit,delta):     
+	def __get_clossest_obstacle(self,unit,delta):
+		dist_to_the_closest     = 9999999999
+		closest_obstacle        = None
+
+		ahead  = unit.current_position + unit.velocity.norm() * 36
+		ahead2 = unit.current_position + unit.velocity.norm() * 18
+
+
+		for obstacle in self.whole_objcts:
+			if unit == obstacle : continue
+			if obstacle.current_position.distance_to(unit.current_position).len() > 50: continue
+			
+			distance = ahead2.distance_to(obstacle.current_position).len()
+			if distance < dist_to_the_closest:
+				if distance < unit.RADIUS + obstacle.RADIUS :
+					closest_obstacle    = obstacle
+					dist_to_the_closest = distance
+					unit.ahead = ahead2
+					continue
+
+			distance = ahead.distance_to(obstacle.current_position).len()
+			if distance < dist_to_the_closest:
+				if distance < unit.RADIUS + obstacle.RADIUS :
+					closest_obstacle    = obstacle
+					dist_to_the_closest = distance
+					unit.ahead = ahead
+
+
+		return closest_obstacle
+
+	def __get_clossest_obstacle2(self,unit,delta):     
 		dist_to_the_closest     = 9999999999
 		closest_obstacle        = None
 					
 		for obstacle in self.whole_objcts:
 			if unit == obstacle : continue
-			if obstacle.current_position.distance_to(unit.current_position).len() > 25: continue
+			if obstacle.current_position.distance_to(unit.current_position).len() > 50: continue
 			
 			local_position = unit.current_position.to_local_space(obstacle.current_position)
 			if local_position.x < 0: continue

@@ -167,7 +167,9 @@ class Enemy2:
 	m                 = 1
 	closest_obstacle  = None
 
-	priorities        = [0.33, 0.33, 0.33]
+	ahead             = Vector(0,0)
+
+	priorities        = [0.33, 0.70, 0.33]
 
 	def __init__(self,  screen, screen_size, id):
 

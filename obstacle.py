@@ -1,6 +1,7 @@
 import pygame
 
-from events   import Events
+import math
+from events   import Events, rise_event
 from random   import randint
 from vector   import Vector
 from colors   import Colors, get_color
@@ -45,7 +46,8 @@ class Obstacle:
 
 	def random_position(self):
 		position = Vector( randint(0, self.screen_size.x), randint(0, self.screen_size.y))
-		if(position.x >= 462 and position.x <= 562 and position.y >= 310 and position.y <= 410): # player start position: Vector(512,360)
+		if(position.x >= 462 and position.x <= 562 and position.y >= 310 and position.y <= 410): 
+		# player start position: Vector(512,360)
 			position = self.random_position() 
 		return position	
 
@@ -61,8 +63,25 @@ class Obstacle:
 
 		pygame.draw.circle(self.current_screen, self.COLOR_OUT, self.current_position.to_table(), self.RADIUS, self.THICK )
 		
+	def calc_distance(self, point, f):
+		return ( abs(f.x * point.x - point.y + f.y) ) / ( math.sqrt(f.x * f.x + 1) )
+
 	def process_event(self,event):
-		pass
+		if event.type == Events.SHOOT:
+			fun = event.function
+			distance = self.calc_distance(self.current_position, fun)
+
+			if distance <= self.RADIUS:
+				rise_event( Events.INTERSECTION, { "intersection" : True, "point" : self.current_position } )
+			else:
+				rise_event( Events.INTERSECTION, { "intersection" : False, "point" : Vector(0,0) } )
+
+			
+			# sprawdzic odleglosc pkt od prostej i zobaczyc czy mniejsze od promienia
+			# wyliczyc cpunkt przeciecia i go zwrocic w rise event
+			# wyemitować koljne zdarzenie
+			# rise.. even ()"fun, heir: "
+		
 		
 	def process_physics(self):
 		pass

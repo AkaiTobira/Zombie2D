@@ -147,26 +147,31 @@ class PlayerActions:
 
 	player_position = None
 	mouse_position  = Vector(0,0)
+	pt_to_draw		= Vector(0,0)
+	pt_from			= Vector(2,1)
+	pt_to			= Vector(2,1)
+	intersecting	= True
 
 	def __init__(self, screen, position):
 		self.player_position = position
 		self.screen = screen
 
 	def draw_railgun(self):
-		rise_event( Events.SHOOT, {} )
-		
-		pt_from = self.player_position
-		pt_to = self.player_position + (1260 * (self.mouse_position - self.player_position).norm())
-	#	print("from: " + str(pt_from) + ", to: " + str(pt_to))
-		self.lin_function(pt_from, pt_to)
+	#	print("drawing...")
+	#	print("from: " + str(self.pt_from) + ", to: " + str(self.pt_to))
 		
 		pygame.draw.line(
 			self.screen, 
 			self.railgun_color, 
-			pt_from.to_table(), 
-			pt_to.to_table(), 
+			self.pt_from.to_table(), 
+			self.pt_to.to_table(), 
 			self.railgun_thick)	
+	
 
+	def call_shoot_event(self):
+		self.pt_from = self.player_position
+		self.pt_to = self.player_position + (1260 * (self.mouse_position - self.player_position).norm())
+		rise_event( Events.SHOOT, { "function" : self.lin_function(self.pt_from, self.pt_to) } )
 
 	def lin_function(self, pt_from, pt_to):
 		lin_fun = Vector(0,0) 
@@ -180,16 +185,24 @@ class PlayerActions:
 		if event.type == Events.IS_READY:
 			self.is_ready = True
 
-		elif event.type == pygame.MOUSEBUTTONDOWN:
+		if event.type == pygame.MOUSEBUTTONDOWN:
 			self.shoot = True
 			self.mouse_position = (Vector(event.pos[0], event.pos[1]))
 			self.is_ready = False
+
+		if event.type == Events.INTERSECTION:
+		#	intersecting = event.intersection
+		#	if intersecting:
+		#		pt_to_draw = event.point
+			self.draw_railgun()	
 
 		
 	def draw(self):
 		if self.shoot:
 			if self.is_ready:
-				self.draw_railgun()
+				self.call_shoot_event()
+				print("call shoot event")
+
 
 	def update(self, delta, position):
 		self.player_position = position

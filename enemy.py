@@ -169,7 +169,9 @@ class Enemy2:
 
 	ahead             = Vector(0,0)
 
-	priorities        = [0.33, 0.70, 0.33]
+	priorities        = [0.05, 0.7, 0.5]
+
+	triggered         = False
 
 	def __init__(self,  screen, screen_size, id):
 
@@ -185,9 +187,12 @@ class Enemy2:
 		self.accumulate       = Vector(0.0,0.0)
 
 		self.ai 			  = FiniteStateMachine(self)
-		self.ai.set_current_state(SteringWander())
+		self.ai.set_current_state(TestBehaviour())
+		self.mouse_point      = Vector(0,0)
 
 	def process_event(self, event):
+		if event.type == pygame.MOUSEMOTION:
+			self.mouse_point = Vector(event.pos[0], event.pos[1])
 		pass
 
 	def update(self,delta):
@@ -198,3 +203,4 @@ class Enemy2:
 		pygame.draw.circle(self.current_screen, self.COLOR, self.current_position.to_table(), self.RADIUS, self.THICKNESS )
 
 		pygame.draw.line(self.current_screen, get_color(Colors.RED),self.current_position.to_table(), ( self.current_position + self.velocity).to_table(), 2 )
+		pygame.draw.line(self.current_screen, get_color(Colors.BLUE),Vector(512,0).to_table(), Vector(512,720).to_table(), 2 )

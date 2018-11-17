@@ -155,6 +155,8 @@ class CollisionSystem:
 	def update(self, delta):
 		self.__detect_collision_for_player(delta)
 		self.__predict_collisions(delta)
+		for unit in self.enemy_list:
+			self.__get_five(unit)
 	#	self.__detect_collision_for_enemies(delta)
 
 
@@ -216,3 +218,18 @@ class CollisionSystem:
 				closest_obstacle        = obstacle
 		
 		return closest_obstacle
+
+	def __get_five(self, unit):
+		closest = []
+		for enem in self.enemy_list:
+			if enem.current_position.distance_to( unit.current_position ).len() < 25:
+				if enem.triggered == False : 
+					closest.append(enem)
+					
+			
+			if len(closest) > 4:
+				print( "NOW GO HUNT!!")
+				for c in closest:
+					c.triggered = True
+					c.ai.set_current_state(PlayerHunt())
+				return

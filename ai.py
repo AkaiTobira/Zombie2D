@@ -243,8 +243,8 @@ class TestBehaviour(State):
         return velocity
 
     def arrival(self, owner, target):
-        distance = owner.current_position.distance_to(owner.mouse_point)
-        velocity =  (owner.mouse_point- owner.current_position).norm() * owner.max_speed     - owner.velocity
+        distance = owner.current_position.distance_to(target.current_position)
+        velocity =  (target.current_position- owner.current_position).norm() * owner.max_speed     - owner.velocity
         return min( velocity , distance ) 
 
     def avoid(self, owner, target):
@@ -322,7 +322,8 @@ class TestBehaviour(State):
 
 
     def calculate_steering(self, owner, player):
-        stering = self.wander(owner,player)  *  owner.priorities[0]
+        stering = self.arrival(owner, owner.teammate) *  owner.priorities[0]
+    #    stering = self.wander(owner,player)  *  owner.priorities[0]
     #    stering   = self.arrival(owner,player) #      *  owner.priorities[0]
 
         stering  += self.avoid(owner,player)       *  owner.priorities[1]

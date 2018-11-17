@@ -157,7 +157,21 @@ class CollisionSystem:
 		self.__predict_collisions(delta)
 		for unit in self.enemy_list:
 			self.__get_five(unit)
+			self.__select_closest(unit)
 	#	self.__detect_collision_for_enemies(delta)
+
+	def __select_closest(self, unit):
+		closet_one = 99999
+		enemy      = None 
+
+		for e in self.enemy_list:
+			if e == unit : continue
+
+			if e.current_position.distance_to(unit.current_position).len() < closet_one:
+				closet_one = e.current_position.distance_to(unit.current_position).len()
+				enemy = e
+				
+		unit.teammate = enemy
 
 
 	def __predict_collisions(self,d):
@@ -222,7 +236,7 @@ class CollisionSystem:
 	def __get_five(self, unit):
 		closest = []
 		for enem in self.enemy_list:
-			if enem.current_position.distance_to( unit.current_position ).len() < 25:
+			if enem.current_position.distance_to( unit.current_position ).len() < 40:
 				if enem.triggered == False : 
 					closest.append(enem)
 					

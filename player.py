@@ -170,7 +170,7 @@ class PlayerActions:
 
 	def call_shoot_event(self):
 		self.pt_from = self.player_position
-		self.pt_to = self.player_position + (1260 * (self.mouse_position - self.player_position).norm())
+		self.pt_to   = self.player_position + (1260 * (self.mouse_position - self.player_position).norm())
 		rise_event( Events.SHOOT, { "function" : self.lin_function(self.pt_from, self.pt_to) } )
 
 	def lin_function(self, pt_from, pt_to):
@@ -182,31 +182,34 @@ class PlayerActions:
 	
 
 	def process_event(self, event):
+
 		if event.type == Events.IS_READY:
 			self.is_ready = True
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
-			self.shoot = True
-			self.mouse_position = (Vector(event.pos[0], event.pos[1]))
-			self.is_ready = False
+			if self.is_ready :
+				self.mouse_position = (Vector(event.pos[0], event.pos[1]))
+				self.shoot = True
+				self.is_ready = False
 
 		if event.type == Events.INTERSECTION:
 		#	intersecting = event.intersection
 		#	if intersecting:
 		#		pt_to_draw = event.point
-			self.draw_railgun()	
+		#	self.draw_railgun()	
+			pass
 
 		
 	def draw(self):
-		if self.shoot:
-			if self.is_ready:
-				self.call_shoot_event()
-				print("call shoot event")
+		if self.shoot and not self.is_ready :
+			self.draw_railgun()
+			print("call shoot event")
 
 
 	def update(self, delta, position):
 		self.player_position = position
 		if(self.shoot):
+			self.call_shoot_event()		
 			self.sum_delta += delta
 			if(self.sum_delta > 0.1):
 				self.shoot = False

@@ -163,7 +163,7 @@ class Enemy2:
 	current_position  = Vector(0,0)
 	velocity          = Vector(0,0)
 	ai                = None
-	max_speed         = Vector(100,100)
+	max_speed         = Vector(50,50)
 	m                 = 1
 	closest_obstacle  = None
 
@@ -189,6 +189,7 @@ class Enemy2:
 		self.ai 			  = FiniteStateMachine(self)
 		self.ai.set_current_state(TestBehaviour())
 		self.mouse_point      = Vector(0,0)
+		self.teammate         = self
 
 	def process_event(self, event):
 		if event.type == pygame.MOUSEMOTION:

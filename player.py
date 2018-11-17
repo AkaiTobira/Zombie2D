@@ -203,7 +203,7 @@ class PlayerActions:
 	def draw(self):
 		if self.shoot and not self.is_ready :
 			self.draw_railgun()
-			print("call shoot event")
+		#	print("call shoot event")
 
 
 	def update(self, delta, position):

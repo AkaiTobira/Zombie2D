@@ -188,6 +188,7 @@ class Enemy2:
 
 		self.ai 			  = FiniteStateMachine(self)
 		self.ai.set_current_state(TestBehaviour())
+		self.need_target       = True
 		self.mouse_point      = Vector(0,0)
 		self.teammate         = self
 

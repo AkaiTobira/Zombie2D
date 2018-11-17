@@ -158,7 +158,12 @@ class CollisionSystem:
 		for unit in self.enemy_list:
 			self.__get_five(unit)
 			self.__select_closest(unit)
+			self.runaway(unit, self.player)
 	#	self.__detect_collision_for_enemies(delta)
+
+	def runaway(self, unit, player):
+		if unit.current_position.distance_to(player.current_position).len() < 150 and not unit.triggered:
+			unit.ai.change_state( EvadeWander() )
 
 	def __select_closest(self, unit):
 		closet_one = 99999
@@ -166,6 +171,7 @@ class CollisionSystem:
 
 		for e in self.enemy_list:
 			if e == unit : continue
+#			if e.need_target:
 
 			if e.current_position.distance_to(unit.current_position).len() < closet_one:
 				closet_one = e.current_position.distance_to(unit.current_position).len()

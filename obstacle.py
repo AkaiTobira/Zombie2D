@@ -66,10 +66,11 @@ class Obstacle:
 		return ( abs(f.x * point.x - point.y + f.y) ) / ( math.sqrt(f.x * f.x + 1) )
 
 	def process_event(self,event):
-		pass
+	#	pass
 
-	#	if event.type == Events.SHOOT:
-	#		fun = event.function
+		if event.type == Events.SHOOT:
+			fun = event.function
+			rise_event( Events.INTERSECTION, { "function" : fun } )
 	#		distance = self.calc_distance(self.current_position, fun)
 
 	#		if distance <= self.RADIUS:

@@ -142,15 +142,17 @@ class PlayerActions:
 	railgun_color	= get_color(Colors.YELLOW)
 	railgun_thick	= 2
 	sum_delta		= 0
+
 	shoot			= False
 	is_ready		= True
+	intersecting	= True
 
-	player_position = None
+	player_position = Vector(0,0)
 	mouse_position  = Vector(0,0)
 	pt_to_draw		= Vector(0,0)
 	pt_from			= Vector(2,1)
 	pt_to			= Vector(2,1)
-	intersecting	= True
+	
 
 	def __init__(self, screen, position):
 		self.player_position = position
@@ -158,12 +160,8 @@ class PlayerActions:
 
 	def draw_railgun(self):
 	#	print("drawing...")
-	#	print("from: " + str(self.pt_from) + ", to: " + str(self.pt_to))
 
-		self.pt_from = self.player_position
-		self.pt_to   = self.player_position + (1260 * (self.mouse_position - self.player_position).norm())
-
-		rise_event( Events.SHOOT, {} )
+		self.call_shoot_event()
 		
 		pygame.draw.line(
 			self.screen, 
@@ -176,13 +174,14 @@ class PlayerActions:
 	def call_shoot_event(self):
 		self.pt_from = self.player_position
 		self.pt_to   = self.player_position + (1260 * (self.mouse_position - self.player_position).norm())
-		rise_event( Events.SHOOT, { "function" : self.lin_function(self.pt_from, self.pt_to) } )
+		rise_event( Events.SHOOT, { 
+			"function" : self.lin_function(self.pt_from, self.pt_to), 
+			"pt_from"  : self.pt_from } )
 
 	def lin_function(self, pt_from, pt_to):
 		lin_fun = Vector(0,0) 
 		lin_fun.x = (pt_from.y - pt_to.y) / (pt_from.x - pt_to.x)
 		lin_fun.y = pt_from.y - lin_fun.x * pt_from.x
-	#	print("function: " + str(lin_fun))
 		return lin_fun # zwraca parametry a i b funkcji
 	
 
@@ -197,11 +196,14 @@ class PlayerActions:
 			self.is_ready = False
 
 		if event.type == Events.INTERSECTION:
+			func = event.function
+			self.intersecting = True
+		#	print("intersection: " + str(func))
 		#	intersecting = event.intersection
 		#	if intersecting:
 		#		pt_to_draw = event.point
 		#	self.draw_railgun()	
-			pass
+		#	pass
 
 		
 	def draw(self):
@@ -214,7 +216,7 @@ class PlayerActions:
 		self.player_position = position
 		if self.shoot:	
 			self.sum_delta += delta
-			if(self.sum_delta > 0.1):
+			if(self.sum_delta > 0.08):
 				self.shoot = False
 				self.sum_delta = 0
 

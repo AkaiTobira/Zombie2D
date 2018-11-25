@@ -7,7 +7,7 @@ from events     import Events, rise_event
 class Cursor:
 
 	COLOR       = get_color(Colors.YELLOW)	
-	RADIUS	    = 12	
+	RADIUS	    = 8	
 	THICK	    = 1	
 	position 	= Vector(0,0)
 	screen      = None
@@ -90,7 +90,7 @@ class HUD:
 		self.cursor.process_event(event)	
 
 	def update(self, delta):
-		self.delta += 90 * delta
+		self.delta += 98 * delta
 		if self.delta > self.cooldown:
 			self.delta = self.cooldown
 			rise_event(Events.IS_READY, {})

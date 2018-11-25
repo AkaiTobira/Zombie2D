@@ -34,6 +34,7 @@ class Enemy:
 	screen_size = Vector(0,0)
 	
 	state       = "Wait"
+
 	
 	def __move(self, velocity, delta):
 		self.previous_position     = self.current_position
@@ -172,6 +173,7 @@ class Enemy2:
 	priorities        = [0.05, 0.7, 0.5]
 
 	triggered         = False
+	visible			  = True
 
 	def __init__(self,  screen, screen_size, id):
 
@@ -192,17 +194,39 @@ class Enemy2:
 		self.mouse_point      = Vector(0,0)
 		self.teammate         = self
 
+	def calc_distance(self, point, f):
+		return ( abs(f.x * point.x - point.y + f.y) ) / ( math.sqrt(f.x * f.x + 1) )
+
 	def process_event(self, event):
 		if event.type == pygame.MOUSEMOTION:
 			self.mouse_point = Vector(event.pos[0], event.pos[1])
-		pass
+
+		if event.type == Events.SHOOT:
+			fun = event.function
+		#	print("a: " + str(fun.x) + ", b: " + str(fun.y))
+			pt_from = event.pt_from
+			distance = self.calc_distance(self.current_position, fun)
+
+			if distance <= self.RADIUS:
+				self.visible = False
+				
+		#		if fun.x < 0:   # a < 0
+		#			if self.current_position.x < pt_from.x and self.current_position.y < pt_from.y:
+		#				self.visible = False
+		#		elif fun.x > 0: # a > 0
+		#			if self.current_position.x > pt_from.x and self.current_position.y > pt_from.y:
+		#				self.visible = False
+		
 
 	def update(self,delta):
 		self.previous_position = self.current_position	
 		self.current_position += self.velocity * delta
 
 	def draw(self):
-		pygame.draw.circle(self.current_screen, self.COLOR, self.current_position.to_table(), self.RADIUS, self.THICKNESS )
+		if self.visible:
+			pygame.draw.circle(self.current_screen, self.COLOR, self.current_position.to_table(), self.RADIUS, self.THICKNESS )
+		else:
+			pygame.draw.circle(self.current_screen, get_color(Colors.RED), self.current_position.to_table(), self.RADIUS, self.THICKNESS )
 
 	#	pygame.draw.line(self.current_screen, get_color(Colors.RED),self.current_position.to_table(), ( self.current_position + self.velocity).to_table(), 2 )
 	#	pygame.draw.line(self.current_screen, get_color(Colors.BLUE),Vector(512,0).to_table(), Vector(512,720).to_table(), 2 )

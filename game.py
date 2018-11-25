@@ -8,7 +8,7 @@ from generator import ObjectsGenerator, Sandbox
 from colors    import Colors, get_color
 from hud       import HUD
 
-NUMBER_OF_ENEMIES   = 30
+NUMBER_OF_ENEMIES   = 20
 NUMBER_OF_OBSTACLES = 20
 
 START_POSITION      = Vector(512,360)

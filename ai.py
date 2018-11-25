@@ -49,13 +49,13 @@ class State:
         return state == self.state
 
     def wander(self,owner, player):
-        w_r        = 3
-        w_distance = 3
-        w_jiter    = 4
+        w_r        = 20
+        w_distance = 15
+        w_jiter    = 1
 
-        self.w_target += Vector(uniform(-1, 1) * w_jiter, uniform(-1, 1) * w_jiter ).norm() * w_r
+        self.w_target = Vector(uniform(-1, 1) * w_jiter, uniform(-1, 1) * w_jiter ).norm() * w_r
         target_local  = self.w_target + Vector(w_distance, 0) 
-        return self.seek(owner, owner.current_position.to_global_space(target_local))
+        return self.seek(owner, owner.current_position + owner.velocity + self.w_target)
 
     def seek(self, owner, target):
         velocity =  (target- owner.current_position).norm() * owner.max_speed     - owner.velocity
@@ -175,9 +175,10 @@ class SteringWander(State):
     max_stering_force = Vector(22,22)
 
     def calculate_steering(self, owner, player):
-        stering   = self.wander(owner,player)  *  owner.priorities[0]
+        stering   = self.wallcheck(owner,player)  *  owner.priorities[2]
+        stering  += self.wander(owner,player)  *  owner.priorities[0]
         stering  += self.avoid(owner,player)       *  owner.priorities[1]
-        stering   += self.wallcheck(owner,player)  *  owner.priorities[2]
+        
         stering   = stering.ttrunc(self.max_stering_force)
 
         return stering
@@ -271,8 +272,8 @@ class TestBehaviour(State):
 
     
     def calculate_steering(self, owner, player):
-        stering = self.arrival(owner, owner.teammate) *  owner.priorities[0]
-    #    stering = self.wander(owner,player)  *  owner.priorities[0]
+     #   stering = self.arrival(owner, owner.teammate) *  owner.priorities[0]
+        stering = self.wander(owner,player)  *  owner.priorities[0]
     #    stering   = self.arrival(owner,player) #      *  owner.priorities[0]
 
         stering  += self.avoid(owner,player)       *  owner.priorities[1]

@@ -159,6 +159,11 @@ class PlayerActions:
 	def draw_railgun(self):
 	#	print("drawing...")
 	#	print("from: " + str(self.pt_from) + ", to: " + str(self.pt_to))
+
+		self.pt_from = self.player_position
+		self.pt_to   = self.player_position + (1260 * (self.mouse_position - self.player_position).norm())
+
+		rise_event( Events.SHOOT, {} )
 		
 		pygame.draw.line(
 			self.screen, 
@@ -187,10 +192,9 @@ class PlayerActions:
 			self.is_ready = True
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
-			if self.is_ready :
-				self.mouse_position = (Vector(event.pos[0], event.pos[1]))
-				self.shoot = True
-				self.is_ready = False
+			self.shoot = True
+			self.mouse_position = (Vector(event.pos[0], event.pos[1]))
+			self.is_ready = False
 
 		if event.type == Events.INTERSECTION:
 		#	intersecting = event.intersection
@@ -201,15 +205,14 @@ class PlayerActions:
 
 		
 	def draw(self):
-		if self.shoot and not self.is_ready :
-			self.draw_railgun()
-		#	print("call shoot event")
+		if self.shoot:
+			if self.is_ready:
+				self.draw_railgun()
 
 
 	def update(self, delta, position):
 		self.player_position = position
-		if(self.shoot):
-			self.call_shoot_event()		
+		if self.shoot:	
 			self.sum_delta += delta
 			if(self.sum_delta > 0.1):
 				self.shoot = False

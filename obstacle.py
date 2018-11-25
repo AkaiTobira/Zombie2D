@@ -59,22 +59,23 @@ class Obstacle:
 
 
 	def draw(self):
-	#	pygame.draw.circle(self.current_screen, get_color(Colors.LIGHT_PURPL2), self.current_position.to_table(), self.RADIUS)
-
+		pygame.draw.circle(self.current_screen, get_color(Colors.LIGHT_PURPL2), self.current_position.to_table(), self.RADIUS)
 		pygame.draw.circle(self.current_screen, self.COLOR_OUT, self.current_position.to_table(), self.RADIUS, self.THICK )
 		
 	def calc_distance(self, point, f):
 		return ( abs(f.x * point.x - point.y + f.y) ) / ( math.sqrt(f.x * f.x + 1) )
 
 	def process_event(self,event):
-		if event.type == Events.SHOOT:
-			fun = event.function
-			distance = self.calc_distance(self.current_position, fun)
+		pass
 
-			if distance <= self.RADIUS:
-				rise_event( Events.INTERSECTION, { "intersection" : True, "point" : self.current_position } )
-			else:
-				rise_event( Events.INTERSECTION, { "intersection" : False, "point" : Vector(0,0) } )
+	#	if event.type == Events.SHOOT:
+	#		fun = event.function
+	#		distance = self.calc_distance(self.current_position, fun)
+
+	#		if distance <= self.RADIUS:
+	#			rise_event( Events.INTERSECTION, { "intersection" : True, "point" : self.current_position } )
+	#		else:
+	#			rise_event( Events.INTERSECTION, { "intersection" : False, "point" : Vector(0,0) } )
 
 			
 			# sprawdzic odleglosc pkt od prostej i zobaczyc czy mniejsze od promienia

@@ -29,9 +29,10 @@ class UnitManager:
 		
 	def draw(self):
 		self.screen.fill(get_color(Colors.NAVYBLUE))
+		self.player.draw()
 		for obj in ( self.enemy_list + self.obstacle_list ):
 			obj.draw()
-		self.player.draw()
+		
 		
 	def process_input(self,event):
 	

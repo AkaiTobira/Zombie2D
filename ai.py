@@ -50,8 +50,8 @@ class State:
 
     def wander(self,owner, player):
         w_r        = 20
-        w_distance = 15
-        w_jiter    = 1
+        w_distance = 7
+        w_jiter    = 5
 
         self.w_target = Vector(uniform(-1, 1) * w_jiter, uniform(-1, 1) * w_jiter ).norm() * w_r
         target_local  = self.w_target + Vector(w_distance, 0) 

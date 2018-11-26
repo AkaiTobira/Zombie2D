@@ -189,10 +189,11 @@ class Enemy2:
 		self.accumulate       = Vector(0.0,0.0)
 
 		self.ai 			  = FiniteStateMachine(self)
-		self.ai.set_current_state(TestBehaviour())
+		self.ai.set_current_state(SteringWander())
 		self.need_target       = True
+		self.can_react         = True
 		self.mouse_point      = Vector(0,0)
-		self.teammate         = self
+		self.closest_hideout  = None
 
 	def calc_distance(self, point, f):
 		return ( abs(f.x * point.x - point.y + f.y) ) / ( math.sqrt(f.x * f.x + 1) )
@@ -223,10 +224,12 @@ class Enemy2:
 		self.current_position += self.velocity * delta
 
 	def draw(self):
-		if self.visible:
+		if self.visible and not self.triggered :
 			pygame.draw.circle(self.current_screen, self.COLOR, self.current_position.to_table(), self.RADIUS, self.THICKNESS )
-		else:
+		elif self.triggered:
+			pygame.draw.circle(self.current_screen, get_color(Colors.YELLOW), self.current_position.to_table(), self.RADIUS, self.THICKNESS )
+		else :
 			pygame.draw.circle(self.current_screen, get_color(Colors.RED), self.current_position.to_table(), self.RADIUS, self.THICKNESS )
 
-		pygame.draw.line(self.current_screen, get_color(Colors.RED),self.current_position.to_table(), ( self.current_position + self.velocity).to_table(), 2 )
+	#	pygame.draw.line(self.current_screen, get_color(Colors.RED),self.current_position.to_table(), ( self.current_position + self.velocity).to_table(), 2 )
 	#	pygame.draw.line(self.current_screen, get_color(Colors.BLUE),Vector(512,0).to_table(), Vector(512,720).to_table(), 2 )

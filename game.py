@@ -55,6 +55,11 @@ class Game:
 		pygame.display.flip()
 		
 	def process_input(self):
+		have_enemy = True
+		if len(self.unitManager.enemy_list) == 0:
+			print( "NO more Enemy ")
+			have_enemy = False
+
 		while True:
 			event = pygame.event.poll()
 			if event.type == pygame.NOEVENT:
@@ -62,8 +67,9 @@ class Game:
 			if event.type == pygame.QUIT:
 				self.running = False
 				return
-			self.unitManager.process_input(event)
-			self.HUD.process_event(event)
+			if have_enemy or event.type == pygame.MOUSEMOTION:
+				self.unitManager.process_input(event)
+				self.HUD.process_event(event)
 			
 		
 	def __calculate_delta_time(self):

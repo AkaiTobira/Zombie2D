@@ -45,13 +45,16 @@ class UnitManager:
 				if unit.id == event.who:
 					unit.process_event(event)
 					return
-					
+
+
+		for obj in self.obstacle_list:
+			obj.process_event(event)	
+
 		for obj in self.enemy_list:
 			obj.process_event(event)
 			self.player.process_event(event)
 
-		for obj in self.obstacle_list:
-			obj.process_event(event)
+
 
 		pass
 		
@@ -167,22 +170,21 @@ class CollisionSystem:
 	#	self.__detect_collision_for_enemies(delta)
 
 	def runaway(self, unit, player):
-		if unit.current_position.distance_to(player.current_position).len() < 150 and not unit.triggered:
-			unit.ai.change_state( EvadeWander() )
+		if unit.current_position.distance_to(player.current_position).len() < 150 and not unit.triggered and unit.can_react:
+			if randint(0,2) == 1 : unit.ai.change_state( EvadeWander() )
+			else : unit.ai.change_state( HideBehaviour() )
+			unit.can_react = False
 
 	def __select_closest(self, unit):
 		closet_one = 99999
-		enemy      = None 
+		obst      = None 
 
-		for e in self.enemy_list:
-			if e == unit : continue
-#			if e.need_target:
-
+		for e in self.obstacle_list:
 			if e.current_position.distance_to(unit.current_position).len() < closet_one:
 				closet_one = e.current_position.distance_to(unit.current_position).len()
-				enemy = e
+				obst = e
 				
-		unit.teammate = enemy
+		unit.closest_hideout = obst
 
 
 	def __predict_collisions(self,d):
@@ -247,12 +249,12 @@ class CollisionSystem:
 	def __get_five(self, unit):
 		closest = []
 		for enem in self.enemy_list:
-			if enem.current_position.distance_to( unit.current_position ).len() < 40:
+			if enem.current_position.distance_to( unit.current_position ).len() < 65:
 				if enem.triggered == False : 
 					closest.append(enem)
 					
 			
-			if len(closest) > 4:
+			if len(closest) > 2:
 				print( "NOW GO HUNT!!")
 				for c in closest:
 					c.triggered = True

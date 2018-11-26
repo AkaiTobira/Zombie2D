@@ -274,12 +274,12 @@ class Player:
 			self.THICK )
 
 	def process_event(self, event):
-		if event.type == Events.COLLIDE:
-			self.current_position = event.where
+		#if event.type == Events.COLLIDE:
+		#	self.current_position = event.where
 			
-			if event.stuck :
-				self.current_position  = Vector(randint(0,self.screen_size.x), randint(0,self.screen_size.y))
-				self.previous_position = self.current_position		
+		#	if event.stuck :
+		#		self.current_position  = Vector(randint(0,self.screen_size.x), randint(0,self.screen_size.y))
+		#		self.previous_position = self.current_position		
  	
 		self.actions_behavior.process_event(event)
 

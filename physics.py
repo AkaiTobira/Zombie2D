@@ -46,17 +46,15 @@ class UnitManager:
 					unit.process_event(event)
 					return
 
-
 		for obj in self.obstacle_list:
 			obj.process_event(event)	
 
 		for obj in self.enemy_list:
 			obj.process_event(event)
-			self.player.process_event(event)
+			
 
 
-
-		pass
+		self.player.process_event(event)
 		
 	def process_physics(self,delta):
 		self.mv_system.update(delta)

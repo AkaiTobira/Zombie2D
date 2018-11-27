@@ -143,9 +143,10 @@ class PlayerActions:
 	railgun_thick	= 2
 	sum_delta		= 0
 
-	shoot			= False
-	is_ready		= True
-	intersecting	= True
+	shoot			= False # Shot started
+
+	is_ready		= True  # Check if can shoot 
+	can_draw     	= True  # Ready to draw
 
 	player_position = Vector(0,0)
 	mouse_position  = Vector(0,0)
@@ -175,6 +176,7 @@ class PlayerActions:
 		self.pt_from = self.player_position
 		self.pt_to   = self.player_position + (1260 * (self.mouse_position - self.player_position).norm())
 		rise_event( Events.SHOOT, { 
+			"to_who"   : "obst",
 			"function" : self.lin_function(self.pt_from, self.pt_to), 
 			"pt_from"  : self.pt_from } )
 
@@ -191,13 +193,17 @@ class PlayerActions:
 			self.is_ready = True
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
-			self.shoot = True
+			if self.is_ready : 
+				self.shoot    = True
+				self.can_draw = False
+				self.call_shoot_event()
 			self.mouse_position = (Vector(event.pos[0], event.pos[1]))
-			self.is_ready = False
 
 		if event.type == Events.INTERSECTION:
+			print("EEEE")
+
 			func = event.function
-			self.intersecting = True
+			self.can_draw = True
 		#	print("intersection: " + str(func))
 		#	intersecting = event.intersection
 		#	if intersecting:
@@ -207,9 +213,9 @@ class PlayerActions:
 
 		
 	def draw(self):
-		if self.shoot:
-			if self.is_ready:
-				self.draw_railgun()
+		#print( self.is_ready , self.shoot , self.can_draw)
+		if self.is_ready and self.shoot and self.can_draw :
+			self.draw_railgun()
 
 
 	def update(self, delta, position):
@@ -281,6 +287,8 @@ class Player:
 		#		self.current_position  = Vector(randint(0,self.screen_size.x), randint(0,self.screen_size.y))
 		#		self.previous_position = self.current_position		
  	
+
+
 		self.actions_behavior.process_event(event)
 
 		if event.type == pygame.MOUSEMOTION:

@@ -8,7 +8,8 @@ from generator import ObjectsGenerator, Sandbox
 from colors    import Colors, get_color
 from hud       import HUD
 
-NUMBER_OF_ENEMIES   = 20
+
+NUMBER_OF_ENEMIES   = 6
 NUMBER_OF_OBSTACLES = 20
 
 START_POSITION      = Vector(512,360)
@@ -60,14 +61,20 @@ class Game:
 			print( "NO more Enemy ")
 			have_enemy = False
 
+
+
+
 		while True:
 			event = pygame.event.poll()
+
+
+
 			if event.type == pygame.NOEVENT:
 				return
 			if event.type == pygame.QUIT:
 				self.running = False
 				return
-			if have_enemy or event.type == pygame.MOUSEMOTION:
+			if have_enemy :
 				self.unitManager.process_input(event)
 				self.HUD.process_event(event)
 			

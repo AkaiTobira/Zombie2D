@@ -30,6 +30,10 @@ class Obstacle:
 		self.id               = id
 		self.set_position(obs_list)
 
+#		points = self.intersection_points(Vector(3,2), 2, Vector(0,2))
+#		print(str(points[0]))
+#		print(str(points[1]))
+
 
 	def set_position(self, obs_list):
 
@@ -65,24 +69,64 @@ class Obstacle:
 	def calc_distance(self, point, f):
 		return ( abs(f.x * point.x - point.y + f.y) ) / ( math.sqrt(f.x * f.x + 1) )
 
+	def solve(self, P1, P2, P3, P4):
+		nominatorA = (P4.x - P3.x)*(P1.y - P3.y) - (P4.y - P3.y)*(P1.x - P3.x)
+		nominatorB = (P2.x - P1.x)*(P1.y - P3.y) - (P2.y - P1.y)*(P1.x - P3.x)
+		denominator = (P4.y - P3.y)*(P2.x - P1.x) - (P4.x - P3.x)*(P2.y - P1.y)
+
+		if denominator == 0 : return None
+
+		uA = nominatorA / denominator
+		uB = nominatorB / denominator
+
+		if uA < 0 or uA > 1 : return None
+		if uB < 0 or uB > 1 : return None
+
+		return Vector( 
+			P1.x + uA * (P2.x - P1.x),
+			P1.y + uA * (P2.y - P1.y))
+
+
+	def lin_function(self, pt_from, pt_to):
+		lin_fun = Vector(0,0) 
+		lin_fun.x = (pt_from.y - pt_to.y) / (pt_from.x - pt_to.x)
+		lin_fun.y = pt_from.y - lin_fun.x * pt_from.x
+		return lin_fun # zwraca parametry a i b funkcji		
+
+
+	def intersection_points(self, P, r, f):
+		a = 1 + f.x * f.x
+		b = 2 * f.x * f.y - 2 * f.x * P.y - 2 * P.x
+		c = - r * r + P.x * P.x + f.y * f.y - 2 * f.y * P.y + P.y * P.y
+
+		x1 = (- b - math.sqrt(b * b - 4 * a * c)) / (2 * a)
+		x2 = (- b + math.sqrt(b * b - 4 * a * c)) / (2 * a)
+
+		y1 = f.x * x1 + f.y
+		y2 = f.x * x2 + f.y
+
+		return [Vector(x1, y1), Vector(x2, y2)]	
+
 	def process_event(self,event):
-	#	pass
 
 		if event.type == Events.SHOOT:
-			fun = event.function
-			rise_event( Events.INTERSECTION, { "function" : fun } )
-	#		distance = self.calc_distance(self.current_position, fun)
 
-	#		if distance <= self.RADIUS:
-	#			rise_event( Events.INTERSECTION, { "intersection" : True, "point" : self.current_position } )
-	#		else:
-	#			rise_event( Events.INTERSECTION, { "intersection" : False, "point" : Vector(0,0) } )
+			shoot_line = self.lin_function(event.pt_from, event.pt_to)
 
-			
-			# sprawdzic odleglosc pkt od prostej i zobaczyc czy mniejsze od promienia
-			# wyliczyc cpunkt przeciecia i go zwrocic w rise event
-			# wyemitować koljne zdarzenie
-			# rise.. even ()"fun, heir: "
+			a = shoot_line.x * -1
+			b = self.current_position.y - a * self.current_position.x
+			obst_line = Vector(a,b)
+		#	obst_line to prosta prostopadla do linii strzalu i przechodzaca przez srodek przeszkody
+
+			obs_points = self.intersection_points(self.current_position, self.RADIUS, obst_line)
+
+			point = self.solve(event.pt_from, event.pt_to, obs_points[0], obs_points[1])
+			print("id: " + str(self.id) + ", " + str(point))
+
+			if point is None:
+				point = event.pt_to
+
+			rise_event( Events.INTERSECTION, { "point" : point } )
 		
 		
 	def process_physics(self):

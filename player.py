@@ -34,6 +34,7 @@ class Orientation:
 	def __init__(self, scancode, velocity):
 		self.scancode = scancode
 		self.velocity = velocity
+		self.enable   = False
 
 	def get_velocity(self):
 		return self.velocity
@@ -65,8 +66,13 @@ class PlayerMoveBehavior:
 					"left"  : Orientation([75, 30], Vector(-1.0, 0.0)),
 				  }
 
+	def disable_all_keys(self):
+		for o in self.orientation:
+			self.orientation[o].disable_orientation()
+
 	def __init__(self, position):
 		self.position = position
+		self.disable_all_keys()
 
 	def set_orientation(self, velocity, orientation):
 		self.velocity = (self.velocity + velocity).norm()

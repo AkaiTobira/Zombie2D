@@ -59,6 +59,8 @@ class ObjectsGenerator:
 	def __init__(self, screen, enemy_counter, obstacle_counter, resulution):
 		self.resulution          = resulution
 		self.screen 		 	 = screen
+		self.enemy_list          = []
+		self.obstacle_list       = []
 		self.number_of_enemy 	 = enemy_counter
 		self.number_of_obstacles = obstacle_counter
 		

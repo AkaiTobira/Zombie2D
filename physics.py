@@ -11,7 +11,6 @@ class UnitManager:
 	obstacle_list = []
 	enemy_list    = []
 	
-
 	zombie_counter = 0
 	player         = None
 	screen         = None 
@@ -51,9 +50,7 @@ class UnitManager:
 
 		for obj in self.enemy_list:
 			obj.process_event(event)
-			
-
-
+	
 		self.player.process_event(event)
 		
 	def process_physics(self,delta):

@@ -243,7 +243,7 @@ class Player:
 	mouse_point		  = Vector(0,0)
 	screen_size       = Vector(0,0)
 	graphic 		  = Triangle(0)
-
+	freeze            = False
 	speed             = Vector(100.0,100.0)
 
 	def __init__(self, position, screen, hp):
@@ -254,7 +254,7 @@ class Player:
 		self.move_behavior 		= PlayerMoveBehavior(position)
 		self.rotate_behavior	= PlayerRotateBehavior(position)
 		self.actions_behavior   = PlayerActions(screen, position)
-		self.HP					= hp 		
+		self.HP					= hp 	*1000	
 
 	def get_HP(self):
 		return self.HP	
@@ -278,13 +278,11 @@ class Player:
 			self.THICK )
 
 	def process_event(self, event):
-		#if event.type == Events.COLLIDE:
-		#	self.current_position = event.where
-			
-		#	if event.stuck :
-		#		self.current_position  = Vector(randint(0,self.screen_size.x), randint(0,self.screen_size.y))
-		#		self.previous_position = self.current_position		
- 	
+		
+		if event.type == Events.COLLIDE:
+			self.current_position = event.where - self.velocity
+			self.freeze = True
+
 		self.actions_behavior.process_event(event)
 
 		if event.type == pygame.MOUSEMOTION:
@@ -304,9 +302,12 @@ class Player:
 		if self.rotate_behavior.get_rotation_change() :
 			self.graphic.rotate(self.rotate_behavior.get_rotation_angle())
 
-	def update(self, delta):				
-		self.__move(delta)
-		self.move_behavior.handle_orientation_key_press()	
+	def update(self, delta):
+		if not self.freeze :
+			self.__move(delta)
+			self.move_behavior.handle_orientation_key_press()	
+		else:
+			self.freeze = False
 		self.handle_rotation()
 		self.actions_behavior.update(delta, self.current_position)
 

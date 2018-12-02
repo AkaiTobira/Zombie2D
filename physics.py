@@ -138,8 +138,17 @@ class CollisionSystem:
 	def __send_collision_message(self, unit, unit_2, is_stuck,delta):
 		rise_event(Events.COLLIDE, { "who" : unit.id, "stuck" : is_stuck, "with" : unit_2.id, "where" : unit.current_position - unit.velocity*delta  } )
 
+	def is_in_square(self, unit, delta):
+		future_positon = unit.current_position + unit.velocity*delta 
+		print(future_positon, future_positon.x > 0 or future_positon.x < self.screen_size.x,  future_positon.y > 0 or future_positon.y < self.screen_size.y)
+		if future_positon.x > 0 and future_positon.x < self.screen_size.x : 
+			if future_positon.y > 0 and future_positon.y < self.screen_size.y : 
+				return True
+
+		return False
+
 	def __detect_collision_with_wall(self, unit,delta):
-		if (unit.current_position + unit.velocity*delta).is_behind( self.ZERO_VECTOR ) or not (unit.current_position + unit.velocity*delta).is_behind( self.screen_size ):
+		if not self.is_in_square(unit, delta) :
 			rise_event(Events.COLLIDE, { "who" : unit.id, "stuck" : False, "with" : -1, "where" : unit.current_position - unit.velocity*delta  } )
 
 	def __detect_collision_for_player(self,delta):

@@ -150,17 +150,16 @@ class PlayerActions:
 
 	player_position = Vector(0,0)
 	mouse_position  = Vector(0,0)
-	pt_to_draw		= Vector(0,0)
-	pt_to			= Vector(2,1)
+	pt_to			= Vector(1,1)
 	
 
 	def __init__(self, screen, position):
 		self.player_position = position
 		self.screen = screen
 
+
 	def draw_railgun(self):
-		self.call_shoot_event()
-		
+
 		pygame.draw.line(
 			self.screen, 
 			self.railgun_color, 
@@ -182,6 +181,9 @@ class PlayerActions:
 		lin_fun.x = (pt_from.y - pt_to.y) / (pt_from.x - pt_to.x)
 		lin_fun.y = pt_from.y - lin_fun.x * pt_from.x
 		return lin_fun # zwraca parametry a i b funkcji
+
+	def distance(self, P1, P2):
+		return math.sqrt(( (P1.x - P2.x) ** 2 ) + ( (P1.y - P2.y) ** 2 ) )		
 	
 
 	def process_event(self, event):
@@ -198,12 +200,15 @@ class PlayerActions:
 			self.mouse_position = (Vector(event.pos[0], event.pos[1]))
 
 		if event.type == Events.INTERSECTION:
-			self.pt_to = event.point
+
+			if self.distance(self.player_position, event.point) < self.distance(self.player_position, self.pt_to):
+				self.pt_to = event.point
+			 
 			self.can_draw = True
 
 		
 	def draw(self):
-		#print( self.is_ready , self.shoot , self.can_draw)
+
 		if self.is_ready and self.shoot and self.can_draw :
 			self.draw_railgun()
 
@@ -277,8 +282,6 @@ class Player:
 		#		self.current_position  = Vector(randint(0,self.screen_size.x), randint(0,self.screen_size.y))
 		#		self.previous_position = self.current_position		
  	
-
-
 		self.actions_behavior.process_event(event)
 
 		if event.type == pygame.MOUSEMOTION:

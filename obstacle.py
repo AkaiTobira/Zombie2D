@@ -121,7 +121,6 @@ class Obstacle:
 			obs_points = self.intersection_points(self.current_position, self.RADIUS, obst_line)
 
 			point = self.solve(event.pt_from, event.pt_to, obs_points[0], obs_points[1])
-			print("id: " + str(self.id) + ", " + str(point))
 
 			if point is None:
 				point = event.pt_to

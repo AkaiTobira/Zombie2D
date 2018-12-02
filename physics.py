@@ -140,7 +140,7 @@ class CollisionSystem:
 
 	def is_in_square(self, unit, delta):
 		future_positon = unit.current_position + unit.velocity*delta 
-		print(future_positon, future_positon.x > 0 or future_positon.x < self.screen_size.x,  future_positon.y > 0 or future_positon.y < self.screen_size.y)
+	#	print(future_positon, future_positon.x > 0 or future_positon.x < self.screen_size.x,  future_positon.y > 0 or future_positon.y < self.screen_size.y)
 		if future_positon.x > 0 and future_positon.x < self.screen_size.x : 
 			if future_positon.y > 0 and future_positon.y < self.screen_size.y : 
 				return True

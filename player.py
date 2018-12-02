@@ -153,6 +153,7 @@ class PlayerActions:
 
 	is_ready		= True  # Check if can shoot 
 	can_draw     	= True  # Ready to draw
+	r_to_draw       = True
 
 	player_position = Vector(0,0)
 	mouse_position  = Vector(0,0)
@@ -201,23 +202,19 @@ class PlayerActions:
 			if self.is_ready: 
 				self.shoot    = True
 				self.can_draw = False
+				self.is_ready = False
+				self.mouse_position = (Vector(event.pos[0], event.pos[1]))
 				self.call_shoot_event()
 			
-			self.mouse_position = (Vector(event.pos[0], event.pos[1]))
-
 		if event.type == Events.INTERSECTION:
-
-			if self.distance(self.player_position, event.point) < self.distance(self.player_position, self.pt_to):
+			if event.point.distance_to(self.player_position).len() < self.pt_to.distance_to(self.player_position).len():
 				self.pt_to = event.point
-			 
 			self.can_draw = True
 
 		
 	def draw(self):
-
-		if self.is_ready and self.shoot and self.can_draw :
+		if not self.is_ready and self.shoot  and self.can_draw :
 			self.draw_railgun()
-
 
 	def update(self, delta, position):
 		self.player_position = position

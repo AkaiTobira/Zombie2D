@@ -12,9 +12,10 @@ def main():
     #pygame.display.set_icon(logo)
 	while game.is_running():
 		delta = clock.tick()/1000
-		game.draw()
-		game.update(delta)
 		game.process_input()
+		game.update(delta)
+		game.draw()
+		
 	#	while delta <= 1/60:
 	#		sleep(0.0001)
      

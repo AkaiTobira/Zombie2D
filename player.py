@@ -180,8 +180,7 @@ class PlayerActions:
 		fun = self.lin_function(self.player_position, self.pt_to)
 		rise_event( Events.SHOOT, { 
 			"pt_from" : self.player_position,
-			"pt_to" : self.pt_to,
-			"function" : fun } )
+			"pt_to" : self.pt_to } )
 
 	def lin_function(self, pt_from, pt_to):
 		lin_fun = Vector(0,0) 
@@ -210,10 +209,14 @@ class PlayerActions:
 			if event.point.distance_to(self.player_position).len() < self.pt_to.distance_to(self.player_position).len():
 				self.pt_to = event.point
 			self.can_draw = True
+			
 
 		
 	def draw(self):
 		if not self.is_ready and self.shoot  and self.can_draw :
+			rise_event( Events.HIT_ENEMY_CHECK, { 
+			"pt_from" : self.player_position,
+			"pt_to" : self.pt_to } )
 			self.draw_railgun()
 
 	def update(self, delta, position):
@@ -254,7 +257,7 @@ class Player:
 		self.move_behavior 		= PlayerMoveBehavior(position)
 		self.rotate_behavior	= PlayerRotateBehavior(position)
 		self.actions_behavior   = PlayerActions(screen, position)
-		self.HP					= hp 	*1000	
+		self.HP					= hp 	
 
 	def get_HP(self):
 		return self.HP	

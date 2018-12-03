@@ -9,11 +9,8 @@ from colors    import Colors, get_color
 from hud       import HUD
 
 
-NUMBER_OF_ENEMIES   = 1
+NUMBER_OF_ENEMIES   = 10
 NUMBER_OF_OBSTACLES = 20
-
-
-
 
 START_POSITION      = Vector(512,360)
 
@@ -23,7 +20,7 @@ class Game:
 	resolution  = None
 	name        = None
 
-	def __init_pygame(self, resolution,name):
+	def __init_pygame(self, resolution, name):
 		pygame.init()
 		pygame.mouse.set_visible(False)
 		pygame.display.set_caption(name)
@@ -31,8 +28,8 @@ class Game:
 
 	def __init__(self, resolution, name):
 		self.__init_pygame(resolution,name)
-		self.running  = True
-		self.state    = StateGame(resolution,name,self.screen)
+		self.running    = True
+		self.state      = StateGame(resolution, name, self.screen)
 		self.resolution = resolution
 		self.name       = name
 
@@ -63,14 +60,42 @@ class Game:
 class StateWin:
 	need_restart = False
 	state_name   = "WIN"
-	def fill_screen(self,screen):
-		screen.fill((0,0,0))
+	
+	def fill_screen(self, screen):
+		screen.fill(get_color(Colors.NAVYBLUE))
 		return
 
+	def render_text(self, screen, color, size, text, position):
+		font = pygame.font.SysFont("consolas", size)
+
+		text = font.render(text, True, color)
+		text_rect = text.get_rect(center=(position.x, position.y))
+
+		screen.blit(text, text_rect)
+
+	
 	def draw_label_with_text(self, screen):
-		return
+
+		self.render_text(
+			screen,
+			get_color(Colors.WHITE),
+			40,
+			"YOU WON",
+			START_POSITION
+		)
+
+		self.render_text(
+			screen,
+			get_color(Colors.WHITE),
+			20,
+			"press space to restart",
+			Vector(START_POSITION.x, START_POSITION.y + 60)
+		)
+
+		pygame.draw.rect(screen, get_color(Colors.LIGHT_BLUE), [150,170,724,420], 2)	
 
 	def __init__(self, resolution, name, screen):
+		
 		self.fill_screen(screen)
 		self.draw_label_with_text(screen)
 		pygame.display.flip()
@@ -80,6 +105,7 @@ class StateWin:
 
 	def is_player_dead(self):
 		return False
+
 	def no_more_zombie(self):
 		return False
 
@@ -97,12 +123,39 @@ class StateWin:
 class StateLose:
 	need_restart = False
 	state_name   = "LOSE"
-	def fill_screen(self,screen):
-		screen.fill((0,0,0))
+
+	def fill_screen(self, screen):
+		screen.fill(get_color(Colors.NAVYBLUE))
 		return
 
+	def render_text(self, screen, color, size, text, position):
+		font = pygame.font.SysFont("consolas", size)
+
+		text = font.render(text, True, color)
+		text_rect = text.get_rect(center=(position.x, position.y))
+
+		screen.blit(text, text_rect)
+
+	
 	def draw_label_with_text(self, screen):
-		return
+
+		self.render_text(
+			screen,
+			get_color(Colors.WHITE),
+			40,
+			"GAME OVER",
+			START_POSITION
+		)
+
+		self.render_text(
+			screen,
+			get_color(Colors.WHITE),
+			20,
+			"press space to restart",
+			Vector(START_POSITION.x, START_POSITION.y + 60)
+		)
+
+		pygame.draw.rect(screen, get_color(Colors.LIGHT_RED), [150,170,724,420], 2)
 
 	def __init__(self, resolution, name, screen):
 		self.fill_screen(screen)

@@ -195,30 +195,64 @@ class Enemy2:
 		self.mouse_point      = Vector(0,0)
 		self.closest_hideout  = None
 
-	def calc_distance(self, point, f):
-		return ( abs(f.x * point.x - point.y + f.y) ) / ( math.sqrt(f.x * f.x + 1) )
+
+	def solve(self, P1, P2, P3, P4):
+		nominatorA = (P4.x - P3.x)*(P1.y - P3.y) - (P4.y - P3.y)*(P1.x - P3.x)
+		nominatorB = (P2.x - P1.x)*(P1.y - P3.y) - (P2.y - P1.y)*(P1.x - P3.x)
+		denominator = (P4.y - P3.y)*(P2.x - P1.x) - (P4.x - P3.x)*(P2.y - P1.y)
+
+		if denominator == 0 : return None
+
+		uA = nominatorA / denominator
+		uB = nominatorB / denominator
+
+		if uA < 0 or uA > 1 : return None
+		if uB < 0 or uB > 1 : return None
+
+		return Vector( 
+			P1.x + uA * (P2.x - P1.x),
+			P1.y + uA * (P2.y - P1.y))
+
+
+	def lin_function(self, pt_from, pt_to):
+		lin_fun = Vector(0,0) 
+		lin_fun.x = (pt_from.y - pt_to.y) / (pt_from.x - pt_to.x)
+		lin_fun.y = pt_from.y - lin_fun.x * pt_from.x
+		return lin_fun # zwraca parametry a i b funkcji		
+	
+	def intersection_points(self, P, r, f):
+		a = 1 + f.x * f.x
+		b = 2 * f.x * f.y - 2 * f.x * P.y - 2 * P.x
+		c = - r * r + P.x * P.x + f.y * f.y - 2 * f.y * P.y + P.y * P.y
+
+		x1 = (- b - math.sqrt(b * b - 4 * a * c)) / (2 * a)
+		x2 = (- b + math.sqrt(b * b - 4 * a * c)) / (2 * a)
+
+		y1 = f.x * x1 + f.y
+		y2 = f.x * x2 + f.y
+
+		return [Vector(x1, y1), Vector(x2, y2)]	
 
 	def process_event(self, event):
 		if event.type == pygame.MOUSEMOTION:
 			self.mouse_point = Vector(event.pos[0], event.pos[1])
 
-		if event.type == Events.SHOOT:
-			fun = event.function
-		#	print("a: " + str(fun.x) + ", b: " + str(fun.y))
-			pt_from = event.pt_from
-			distance = self.calc_distance(self.current_position, fun)
+		if event.type == Events.HIT_ENEMY_CHECK:
+			shoot_line = self.lin_function(event.pt_from, event.pt_to)
 
-			if distance <= self.RADIUS:
+			a = shoot_line.x * -1
+			b = self.current_position.y - a * self.current_position.x
+			enemy_line = Vector(a,b)
+		#	enemy_line to prosta prostopadla do linii strzalu i przechodzaca przez srodek wroga
+
+			enemy_points = self.intersection_points(self.current_position, self.RADIUS, enemy_line)
+
+			point = self.solve(event.pt_from, event.pt_to, enemy_points[0], enemy_points[1])
+
+			if point is not None:
 				self.visible = False
-				
-		#		if fun.x < 0:   # a < 0
-		#			if self.current_position.x < pt_from.x and self.current_position.y < pt_from.y:
-		#				self.visible = False
-		#		elif fun.x > 0: # a > 0
-		#			if self.current_position.x > pt_from.x and self.current_position.y > pt_from.y:
-		#				self.visible = False
-		
 
+		
 	def update(self,delta):
 		self.previous_position = self.current_position	
 		self.current_position += self.velocity * delta

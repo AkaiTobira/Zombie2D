@@ -6,8 +6,9 @@ from events     import Events, rise_event
 
 class Cursor:
 
-	COLOR       = get_color(Colors.YELLOW)	
-	RADIUS	    = 8	
+	COLOR       = get_color(Colors.YELLOW)
+	COLOR2	    = get_color(Colors.DARK_YELLOW)
+	RADIUS	    = 10	
 	THICK	    = 1	
 	position 	= Vector(0,0)
 	screen      = None
@@ -20,9 +21,13 @@ class Cursor:
 			self.position = (Vector(event.pos[0], event.pos[1]))
 
 	def draw(self):
+		pygame.draw.circle(self.screen, self.COLOR2, self.position.to_table(), self.RADIUS)
+
 		pygame.draw.circle(self.screen, self.COLOR, self.position.to_table(), self.RADIUS, self.THICK)
-		pygame.draw.line(self.screen, self.COLOR, Vector(self.position.x-self.RADIUS, self.position.y).to_table(), Vector(self.position.x+self.RADIUS,self.position.y).to_table(), self.THICK)
-		pygame.draw.line(self.screen, self.COLOR, Vector(self.position.x, self.position.y-self.RADIUS).to_table(), Vector(self.position.x, self.position.y+self.RADIUS).to_table(), self.THICK)
+
+		pygame.draw.line(self.screen, self.COLOR, Vector(self.position.x-self.RADIUS/3, self.position.y).to_table(), Vector(self.position.x+self.RADIUS/3,self.position.y).to_table(), self.THICK)
+
+		pygame.draw.line(self.screen, self.COLOR, Vector(self.position.x, self.position.y-self.RADIUS/3).to_table(), Vector(self.position.x, self.position.y+self.RADIUS/3).to_table(), self.THICK)
 
 
 class HUD:

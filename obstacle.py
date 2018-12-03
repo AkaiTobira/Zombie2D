@@ -65,9 +65,6 @@ class Obstacle:
 	def draw(self):
 		pygame.draw.circle(self.current_screen, get_color(Colors.LIGHT_PURPL2), self.current_position.to_table(), self.RADIUS)
 		pygame.draw.circle(self.current_screen, self.COLOR_OUT, self.current_position.to_table(), self.RADIUS, self.THICK )
-		
-	def calc_distance(self, point, f):
-		return ( abs(f.x * point.x - point.y + f.y) ) / ( math.sqrt(f.x * f.x + 1) )
 
 	def solve(self, P1, P2, P3, P4):
 		nominatorA = (P4.x - P3.x)*(P1.y - P3.y) - (P4.y - P3.y)*(P1.x - P3.x)
@@ -86,13 +83,11 @@ class Obstacle:
 			P1.x + uA * (P2.x - P1.x),
 			P1.y + uA * (P2.y - P1.y))
 
-
 	def lin_function(self, pt_from, pt_to):
 		lin_fun = Vector(0,0) 
 		lin_fun.x = (pt_from.y - pt_to.y) / (pt_from.x - pt_to.x)
 		lin_fun.y = pt_from.y - lin_fun.x * pt_from.x
-		return lin_fun # zwraca parametry a i b funkcji		
-
+		return lin_fun # zwraca parametry a i b funkcji	
 
 	def intersection_points(self, P, r, f):
 		a = 1 + f.x * f.x

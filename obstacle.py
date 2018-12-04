@@ -112,6 +112,12 @@ class Obstacle:
 		if distance > (self.RADIUS + other.RADIUS): return True
 		else: return False
 
+	def draw_id_number(self):
+		font = pygame.font.SysFont("consolas", self.RADIUS-3)
+
+		text = font.render(str(self.id), True, self.COLOR_OUT)
+		text_rect = text.get_rect(center=(self.current_position.x, self.current_position.y))
+		self.current_screen.blit(text, text_rect)
 
 	def draw(self):
 		pygame.draw.circle(self.current_screen, get_color(Colors.LIGHT_PURPL2), self.current_position.to_table(), self.RADIUS)
@@ -121,67 +127,34 @@ class Obstacle:
 			get_color(Colors.LIGHTER_RED), 
 			self.triangle.to_draw(self.current_position),
 			1)
+	#	self.draw_id_number()	
 
-
-	def solve(self, P1, P2, P3, P4):
-		nominatorA  = (P4.x - P3.x)*(P1.y - P3.y) - (P4.y - P3.y)*(P1.x - P3.x)
-		nominatorB  = (P2.x - P1.x)*(P1.y - P3.y) - (P2.y - P1.y)*(P1.x - P3.x)
-		denominator = (P4.y - P3.y)*(P2.x - P1.x) - (P4.x - P3.x)*(P2.y - P1.y)
-
-		if denominator == 0 : return None
-
-		uA = nominatorA / denominator
-		uB = nominatorB / denominator
-
-		if uA < 0 or uA > 1 : return None
-		if uB < 0 or uB > 1 : return None
-
-		return Vector( 
-			P1.x + uA * (P2.x - P1.x),
-			P1.y + uA * (P2.y - P1.y))
-
-	def lin_function(self, pt_from, pt_to):
-		lin_fun = Vector(0,0) 
-	#	if abs(pt_to.distance_to(pt_from).x)  < 1 : 
-	#		lin_fun.x = 0
-		#else :
-		lin_fun.x = (pt_from.y - pt_to.y) / (pt_from.x - pt_to.x)
-		
-		lin_fun.y = pt_from.y - lin_fun.x * pt_from.x
-		return lin_fun # zwraca parametry a i b funkcji	
-
-	def intersection_points(self, P, r, f):
-		a = 1 + f.x * f.x
-		b = 2 * f.x * f.y - 2 * f.x * P.y - 2 * P.x
-		c = - r * r + P.x * P.x + f.y * f.y - 2 * f.y * P.y + P.y * P.y
-
-		x1 = (- b - math.sqrt(b * b - 4 * a * c)) / (2 * a)
-		x2 = (- b + math.sqrt(b * b - 4 * a * c)) / (2 * a)
-
-		y1 = f.x * x1 + f.y
-		y2 = f.x * x2 + f.y
-
-		return [Vector(x1, y1), Vector(x2, y2)]	
 
 	def is_in_shade(self, point):
 		return self.triangle.is_in_triangle(point)
+
+	def check_intersection(self, shoot_from, shoot_to):
+		v_shoot = shoot_to - shoot_from
+		v_obs = self.current_position - shoot_from
+		dot = v_shoot.norm().dot(v_obs.norm())
+
+		point = None
+		if dot > 0 : 
+			v_len = v_obs.len()
+			angle = math.acos(dot)
+			distance = 2 * math.tan(angle/2) * v_len
+			if distance <= self.RADIUS:
+				v = v_shoot.norm() * v_len
+				point = shoot_from + v
+
+		return point		
 
 	def process_event(self,event):
 
 		if event.type == Events.SHOOT:
 
-		#	if abs( event.pt_to.y - event.pt_from.y)  < 0.01 : 
-			#	rise_event( Events.INTERSECTION, { "point" : self.creepy_OY_solve(pt_from, pt_to) } )
-		#		return
+			point = self.check_intersection(event.pt_from, event.pt_to)
 
-			shoot_line = self.lin_function(event.pt_from, event.pt_to)
-			a = shoot_line.x * -1
-			b = self.current_position.y - a * self.current_position.x
-			obst_line = Vector(a,b)
-		#	obst_line to prosta prostopadla do linii strzalu i przechodzaca przez srodek przeszkody
-
-			obs_points = self.intersection_points(self.current_position, self.RADIUS, obst_line)
-			point = self.solve(event.pt_from, event.pt_to, obs_points[0], obs_points[1])
 			if point is None:
 				point = event.pt_to
 

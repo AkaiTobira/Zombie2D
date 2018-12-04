@@ -177,16 +177,10 @@ class PlayerActions:
 
 	def call_shoot_event(self):
 		self.pt_to   = self.player_position + (1260 * (self.mouse_position - self.player_position).norm())
-		fun = self.lin_function(self.player_position, self.pt_to)
 		rise_event( Events.SHOOT, { 
 			"pt_from" : self.player_position,
 			"pt_to" : self.pt_to } )
 
-	def lin_function(self, pt_from, pt_to):
-		lin_fun = Vector(0,0) 
-		lin_fun.x = (pt_from.y - pt_to.y) / (pt_from.x - pt_to.x)
-		lin_fun.y = pt_from.y - lin_fun.x * pt_from.x
-		return lin_fun # zwraca parametry a i b funkcji
 
 	def distance(self, P1, P2):
 		return math.sqrt(( (P1.x - P2.x) ** 2 ) + ( (P1.y - P2.y) ** 2 ) )		
@@ -211,7 +205,6 @@ class PlayerActions:
 			self.can_draw = True
 			
 
-		
 	def draw(self):
 		if not self.is_ready and self.shoot  and self.can_draw :
 			rise_event( Events.HIT_ENEMY_CHECK, { 

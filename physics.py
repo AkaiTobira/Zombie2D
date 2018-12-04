@@ -57,7 +57,7 @@ class UnitManager:
 		self.mv_system.update(delta)
 		self.cl_system.update(delta)
 		for enemy in self.enemy_list:
-			if not enemy.visible: self.enemy_list.remove(enemy)
+			if enemy.is_dead: self.enemy_list.remove(enemy)
 
 	def add_unit(self,unit):
 		self.zombie_counter += 1
@@ -92,7 +92,7 @@ class MoveSystem:
 		for enemy in self.enemy_list:
 			enemy.ai.update(delta, self.player)
 			enemy.update(delta)
-			if not enemy.visible: self.enemy_list.remove(enemy)
+			if enemy.is_dead: self.enemy_list.remove(enemy)
 
 		self.player.update(delta)
 					
@@ -170,7 +170,7 @@ class CollisionSystem:
 			self.__get_five(unit)
 			self.__select_closest(unit)
 			self.runaway(unit, self.player)
-			if not unit.visible: self.enemy_list.remove(unit)
+			if unit.is_dead: self.enemy_list.remove(unit)
 	#	self.__detect_collision_for_enemies(delta)
 
 	def runaway(self, unit, player):

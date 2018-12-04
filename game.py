@@ -57,8 +57,26 @@ class Game:
 		if self.state.state_name == "GAME" : pygame.display.flip()
 
 
-class StateWin:
+class Stete:
 	need_restart = False
+
+	def restart(self):
+		return self.need_restart
+
+	def is_player_dead(self):
+		return False
+
+	def no_more_zombie(self):
+		return False
+
+	def draw(self):
+		return
+
+	def update(self, delta):
+		return
+
+
+class StateWin(Stete):
 	state_name   = "WIN"
 	
 	def fill_screen(self, screen):
@@ -100,27 +118,12 @@ class StateWin:
 		self.draw_label_with_text(screen)
 		pygame.display.flip()
 
-	def restart(self):
-		return self.need_restart
-
-	def is_player_dead(self):
-		return False
-
-	def no_more_zombie(self):
-		return False
-
-	def draw(self):
-		return
-
-	def update(self, delta):
-		return
-
 	def process_input(self,event):
 		if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
 			if event.scancode == 57:
 				self.need_restart = True
 
-class StateLose:
+class StateLose(Stete):
 	need_restart = False
 	state_name   = "LOSE"
 
@@ -162,26 +165,13 @@ class StateLose:
 		self.draw_label_with_text(screen)
 		pygame.display.flip()
 
-	def restart(self):
-		return self.need_restart
-
-	def is_player_dead(self):
-		return False
-	def no_more_zombie(self):
-		return False
-
-	def draw(self):
-		return
-
-	def update(self, delta):
-		return
 
 	def process_input(self,event):
 		if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
 			if event.scancode == 57:
 				self.need_restart = True
 
-class StateGame:    
+class StateGame(Stete):    
 	generator   = None
 	unitManager = None
 	running     = True 

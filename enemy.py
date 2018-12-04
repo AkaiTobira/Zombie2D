@@ -174,6 +174,7 @@ class Enemy2:
 	state 			 = "E"
 	triggered         = False
 	visible			  = True
+	is_dead           = False
 
 	def __init__(self,  screen, screen_size, id):
 
@@ -194,6 +195,10 @@ class Enemy2:
 		self.can_react         = True
 		self.mouse_point      = Vector(0,0)
 		self.closest_hideout  = None
+
+		self.triggered         = False
+		self.visible		   = True
+		self.is_dead           = False
 
 
 	def solve(self, P1, P2, P3, P4):
@@ -250,7 +255,7 @@ class Enemy2:
 			point = self.solve(event.pt_from, event.pt_to, enemy_points[0], enemy_points[1])
 
 			if point is not None:
-				self.visible = False
+				self.is_dead = True
 
 		
 	def update(self,delta):
@@ -258,10 +263,12 @@ class Enemy2:
 		self.current_position += self.velocity * delta
 
 	def draw(self):
-		if self.visible and not self.triggered :
+		if self.is_dead and not self.triggered :
 			pygame.draw.circle(self.current_screen, self.COLOR, self.current_position.to_table(), self.RADIUS, self.THICKNESS )
 		elif self.triggered:
 			pygame.draw.circle(self.current_screen, get_color(Colors.YELLOW), self.current_position.to_table(), self.RADIUS, self.THICKNESS )
+		elif self.visible:
+			pygame.draw.circle(self.current_screen, get_color(Colors.DARK_YELLOW), self.current_position.to_table(), self.RADIUS, self.THICKNESS )
 		else :
 			pygame.draw.circle(self.current_screen, get_color(Colors.RED), self.current_position.to_table(), self.RADIUS, self.THICKNESS )
 

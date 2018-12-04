@@ -6,6 +6,52 @@ from random   import randint
 from vector   import Vector
 from colors   import Colors, get_color
 
+class Triangle:
+	vertices = []
+	basic    = [] 
+	position = Vector(0,0)
+	def __init__(self, size):
+		self.vertices = [Vector(0.0,-1.0)*size, Vector(-0.7,1.0)*size, Vector(0.7,1.0)*size]
+		self.basic = self.vertices.copy()
+		
+	def rotate(self, angle):
+		for i in range(len(self.vertices)):
+			self.vertices[i] = self.basic[i].rotate(angle)
+		
+	def scale_back_line(self, number):
+		temp        = self.basic[0] 
+
+		self.basic[0] = self.basic[0] * number
+		self.basic[1] = self.basic[1] * number
+		self.basic[2] = self.basic[2] * number
+
+		correction       = self.basic[0] - temp 
+
+		for i in range(len(self.vertices)):
+			self.basic[i] = self.basic[i]-correction
+
+
+	def __sign(self, p1, p2, p3):
+		return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y)
+
+	def is_in_triangle(self, point):
+
+		d1 = self.__sign(point, self.position + self.vertices[0], self.position + self.vertices[1] )
+		d2 = self.__sign(point, self.position + self.vertices[1], self.position + self.vertices[2] )
+		d3 = self.__sign(point, self.position + self.vertices[2], self.position + self.vertices[0] )
+		
+		has_neg = (d1 < 0) or (d2 < 0) or (d3 < 0)
+		has_pos = (d1 > 0) or (d2 > 0) or (d3 > 0)
+
+		return not (has_neg and has_pos)
+
+	def to_draw(self, position):
+		self.position = position
+		return [ (position + self.vertices[0]).to_touple(),
+				 (position + self.vertices[1]).to_touple(),
+				 (position + self.vertices[2]).to_touple()]
+
+
 class Obstacle:
 	RADIUS 			 = 0
 	COLOR_OUT 		 = get_color(Colors.LIGHT_PURPLE)
@@ -20,6 +66,7 @@ class Obstacle:
 	screen_size		 = Vector(0,0) 
 	current_position = Vector(0,0)
 	velocity         = Vector(0,0)
+	triangle         = None
 	
 	
 	def __init__(self, screen, screen_size, id, obs_list):
@@ -29,7 +76,9 @@ class Obstacle:
 		
 		self.id               = id
 		self.set_position(obs_list)
-
+		self.triangle         = Triangle(self.RADIUS)
+		self.triangle.scale_back_line(1024)
+		
 #		points = self.intersection_points(Vector(3,2), 2, Vector(0,2))
 #		print(str(points[0]))
 #		print(str(points[1]))
@@ -46,6 +95,8 @@ class Obstacle:
 				if not self.check_position(obs_list[i]):
 					self.current_position = self.random_position()
 					self.set_position(obs_list)
+
+		self.face 	  = Vector(self.current_position.x, self.current_position.y - 200)
 
 
 	def random_position(self):
@@ -65,6 +116,12 @@ class Obstacle:
 	def draw(self):
 		pygame.draw.circle(self.current_screen, get_color(Colors.LIGHT_PURPL2), self.current_position.to_table(), self.RADIUS)
 		pygame.draw.circle(self.current_screen, self.COLOR_OUT, self.current_position.to_table(), self.RADIUS, self.THICK )
+		pygame.draw.polygon (
+			self.current_screen,  
+			get_color(Colors.LIGHTER_RED), 
+			self.triangle.to_draw(self.current_position),
+			1)
+
 
 	def solve(self, P1, P2, P3, P4):
 		nominatorA  = (P4.x - P3.x)*(P1.y - P3.y) - (P4.y - P3.y)*(P1.x - P3.x)
@@ -106,6 +163,9 @@ class Obstacle:
 
 		return [Vector(x1, y1), Vector(x2, y2)]	
 
+	def is_in_shade(self, point):
+		return self.triangle.is_in_triangle(point)
+
 	def process_event(self,event):
 
 		if event.type == Events.SHOOT:
@@ -127,9 +187,16 @@ class Obstacle:
 
 			rise_event( Events.INTERSECTION, { "point" : point } )
 		
-		
+	def set_player_position(self, position):
+		self.player_position = position
+		self.angle = (self.face - self.current_position).norm().angle_between((position - self.current_position).norm()) 
+
 	def process_physics(self):
 		pass
-		
+	
+	angle = 0
 	def update(self, delta):
+
+		self.triangle.rotate(self.angle)
+		
 		pass

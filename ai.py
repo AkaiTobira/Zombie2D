@@ -180,7 +180,8 @@ class EvadeWander(State):
 
 class SteringWander(State):
     state = "Wander"
-
+    start = 0
+    duration = 0
     max_stering_force = Vector(22,22)
 
     def calculate_steering(self, owner, player):
@@ -194,6 +195,8 @@ class SteringWander(State):
 
 
     def enter(self, owner):
+        self.start = time.time()
+        self.duration = randint(5, 15)
         pass
 
 
@@ -203,49 +206,10 @@ class SteringWander(State):
     def execute(self, owner, player):
         stering_force  = self.calculate_steering(owner, player)
         owner.velocity =  ( owner.velocity + stering_force / owner.m ).ttrunc( owner.max_speed)
-        pass
 
-class StateSteeringBehaviour(State):
-    state = "Stering"
-
-    max_stering_force = Vector(22,22)
-    w_target          = Vector(0,0)
-
-    def wander(self,owner, player):
-        w_r        = 3
-        w_distance = 3
-        w_jiter    = 2
-
-        self.w_target += Vector(uniform(-1, 1) * w_jiter, uniform(-1, 1) * w_jiter ).norm() * w_r
-        target_local  = self.w_target + Vector(w_distance, 0) 
-        return self.seek(owner, owner.current_position.to_global_space(target_local))
-
-    def seek(self, owner, target):
-        distance = target.distance_to(owner.current_position)
-        velocity =  (target- owner.current_position).norm() * owner.max_speed     - owner.velocity
-        return min( velocity , distance ) 
-
-
-
-
-    def calculate_steering(self, owner, player):
-        stering  = self.wander(owner,player)       *  owner.priorities[0]
-     #   stering += self.avoid(player)        *  owner.priorities[1]
-    #   stering += self.separation(player)   *  owner.priorities[2]
-        return stering
-
-    def enter(self, owner):
-        pass
-
-    def exit(self, owner):
-        pass
-
-    def execute(self, owner, player):
-        stering_force = self.calculate_steering(owner, player)
-        owner.velocity = stering_force / owner.m
-
-        if abs(owner.velocity.x) > owner.max_speed.x: owner.velocity.x = sign(owner.velocity.x) * owner.max_speed.x
-        if abs(owner.velocity.y) > owner.max_speed.y: owner.velocity.y = sign(owner.velocity.y) * owner.max_speed.y
+        self.end = time.time()
+        if self.end - self.start > self.duration: 
+            owner.ai.change_state( HideBehaviour() )
 
         pass
 
@@ -275,7 +239,6 @@ class HideBehaviour(State):
             if c_wall :
                 over_shot = f - c_point 
                 stering   += c_wall[2] * over_shot.len() * 3
-                print( stering )
 
         return stering
 
@@ -301,6 +264,7 @@ class HideBehaviour(State):
     def enter(self, owner):
         self.start = time.time()
         owner.max_speed = Vector(100,100)
+        self.duration = randint(5, 15)
         pass
 
 
@@ -313,11 +277,11 @@ class HideBehaviour(State):
         
 
         self.end = time.time()
-        if self.end - self.start > 8: 
-            owner.ai.change_state( EvadeWander() )
+        if self.end - self.start > self.duration: 
+            owner.ai.change_state( SteringWander() )
 
-        if owner.current_position.distance_to(player.current_position).len() < 20 :
-            owner.ai.change_state( EvadeWander() )
+     #   if owner.current_position.distance_to(player.current_position).len() < 20 :
+    #        owner.ai.change_state( EvadeWander() )
 
         stering_force  = self.calculate_steering(owner, player)
         owner.velocity =  ( owner.velocity + stering_force / owner.m ).ttrunc( owner.max_speed)

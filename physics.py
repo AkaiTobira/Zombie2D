@@ -88,8 +88,22 @@ class MoveSystem:
 				return unit
 		return None
 	
+	def hide_unseen_enemy(self, enemy):
+		for obstacle in self.obstacle_list:
+			is_hide = obstacle.is_in_shade(enemy.current_position)
+			if is_hide :
+				enemy.visible = False
+				return
+			enemy.visible = True 
+
 	def update(self, delta):
+		for obstacle in self.obstacle_list:
+			obstacle.set_player_position(self.player.current_position)
+			obstacle.update(delta)
+
+
 		for enemy in self.enemy_list:
+			self.hide_unseen_enemy(enemy)
 			enemy.ai.update(delta, self.player)
 			enemy.update(delta)
 			if enemy.is_dead: self.enemy_list.remove(enemy)
@@ -175,8 +189,7 @@ class CollisionSystem:
 
 	def runaway(self, unit, player):
 		if unit.current_position.distance_to(player.current_position).len() < 150 and not unit.triggered and unit.can_react:
-			if randint(0,2) == 1 : unit.ai.change_state( EvadeWander() )
-			else : unit.ai.change_state( HideBehaviour() )
+			unit.ai.change_state( HideBehaviour() )
 			unit.can_react = False
 
 	def __select_closest(self, unit):

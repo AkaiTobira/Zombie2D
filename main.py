@@ -16,8 +16,5 @@ def main():
 		game.update(delta)
 		game.draw()
 		
-	#	while delta <= 1/60:
-	#		sleep(0.0001)
-     
 if __name__=="__main__":
 	main()

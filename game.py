@@ -4,13 +4,13 @@ import pygame
 from obstacle  import Obstacle as Ob 
 from vector    import Vector 
 from physics   import UnitManager
-from generator import ObjectsGenerator, Sandbox
+from generator import ObjectsGenerator
 from colors    import Colors, get_color
 from hud       import HUD
 
 
-NUMBER_OF_ENEMIES   = 10
-NUMBER_OF_OBSTACLES = 15
+NUMBER_OF_ENEMIES   = 16
+NUMBER_OF_OBSTACLES = 20
 
 START_POSITION      = Vector(512,360)
 

@@ -171,7 +171,7 @@ class Enemy2:
 	ahead             = Vector(0,0)
 
 	priorities        = [0.05, 0.7, 0.5]
-
+	state 			 = "E"
 	triggered         = False
 	visible			  = True
 

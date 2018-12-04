@@ -68,7 +68,7 @@ class HUD:
 		return self.font.render( str(text), True, self.color)	
 
 	def draw_HP_amount(self):
-		self.screen.blit(self.render_text("HP : " + str(self.HP()) + " / " + str(self.HP_max)), self.hp_txt_position)
+		self.screen.blit(self.render_text("HP : " + str(int(self.HP())) + " / " + str(self.HP_max)), self.hp_txt_position)
 
 	def draw_cooldown_amount(self):
 		self.screen.blit(self.render_text("COOLDOWN : " + str(round(self.delta)) + " / " + str(self.cooldown)), self.cd_txt_position)	

@@ -38,7 +38,7 @@ class UnitManager:
 		if event.type == Events.COLLIDE:
 			if event.who == 0:
 				self.player.process_event(event)
-				self.player.decrease_HP(1)
+				if event.hurt : self.player.decrease_HP(0.05)
 				return 
 			for unit in self.enemy_list:
 				if unit.id == event.who:
@@ -136,7 +136,7 @@ class CollisionSystem:
 					self.__send_collision_message( unit_2, unit, self.__is_stuck(unit_2,unit,distance),delta)
 
 	def __send_collision_message(self, unit, unit_2, is_stuck,delta):
-		rise_event(Events.COLLIDE, { "who" : unit.id, "stuck" : is_stuck, "with" : unit_2.id, "where" : unit.current_position - unit.velocity*delta  } )
+		rise_event(Events.COLLIDE, { "who" : unit.id, "hurt": ( False if unit_2.state == "Const" else True), "stuck" : is_stuck, "with" : unit_2.id, "where" : unit.current_position - unit.velocity*delta  } )
 
 	def is_in_square(self, unit, delta):
 		future_positon = unit.current_position + unit.velocity*delta 
@@ -149,7 +149,7 @@ class CollisionSystem:
 
 	def __detect_collision_with_wall(self, unit,delta):
 		if not self.is_in_square(unit, delta) :
-			rise_event(Events.COLLIDE, { "who" : unit.id, "stuck" : False, "with" : -1, "where" : unit.current_position - unit.velocity*delta  } )
+			rise_event(Events.COLLIDE, { "who" : unit.id, "hurt" : False, "stuck" : False, "with" : -1, "where" : unit.current_position - unit.velocity*delta  } )
 
 	def __detect_collision_for_player(self,delta):
 		self.__detect_collision_with_obstacle(self.player,delta)

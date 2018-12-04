@@ -67,8 +67,8 @@ class Obstacle:
 		pygame.draw.circle(self.current_screen, self.COLOR_OUT, self.current_position.to_table(), self.RADIUS, self.THICK )
 
 	def solve(self, P1, P2, P3, P4):
-		nominatorA = (P4.x - P3.x)*(P1.y - P3.y) - (P4.y - P3.y)*(P1.x - P3.x)
-		nominatorB = (P2.x - P1.x)*(P1.y - P3.y) - (P2.y - P1.y)*(P1.x - P3.x)
+		nominatorA  = (P4.x - P3.x)*(P1.y - P3.y) - (P4.y - P3.y)*(P1.x - P3.x)
+		nominatorB  = (P2.x - P1.x)*(P1.y - P3.y) - (P2.y - P1.y)*(P1.x - P3.x)
 		denominator = (P4.y - P3.y)*(P2.x - P1.x) - (P4.x - P3.x)*(P2.y - P1.y)
 
 		if denominator == 0 : return None
@@ -85,7 +85,11 @@ class Obstacle:
 
 	def lin_function(self, pt_from, pt_to):
 		lin_fun = Vector(0,0) 
+	#	if abs(pt_to.distance_to(pt_from).x)  < 1 : 
+	#		lin_fun.x = 0
+		#else :
 		lin_fun.x = (pt_from.y - pt_to.y) / (pt_from.x - pt_to.x)
+		
 		lin_fun.y = pt_from.y - lin_fun.x * pt_from.x
 		return lin_fun # zwraca parametry a i b funkcji	
 
@@ -106,17 +110,18 @@ class Obstacle:
 
 		if event.type == Events.SHOOT:
 
-			shoot_line = self.lin_function(event.pt_from, event.pt_to)
+		#	if abs( event.pt_to.y - event.pt_from.y)  < 0.01 : 
+			#	rise_event( Events.INTERSECTION, { "point" : self.creepy_OY_solve(pt_from, pt_to) } )
+		#		return
 
+			shoot_line = self.lin_function(event.pt_from, event.pt_to)
 			a = shoot_line.x * -1
 			b = self.current_position.y - a * self.current_position.x
 			obst_line = Vector(a,b)
 		#	obst_line to prosta prostopadla do linii strzalu i przechodzaca przez srodek przeszkody
 
 			obs_points = self.intersection_points(self.current_position, self.RADIUS, obst_line)
-
 			point = self.solve(event.pt_from, event.pt_to, obs_points[0], obs_points[1])
-
 			if point is None:
 				point = event.pt_to
 

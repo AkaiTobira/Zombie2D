@@ -10,7 +10,7 @@ from hud       import HUD
 
 
 NUMBER_OF_ENEMIES   = 10
-NUMBER_OF_OBSTACLES = 20
+NUMBER_OF_OBSTACLES = 15
 
 START_POSITION      = Vector(512,360)
 
@@ -181,7 +181,6 @@ class StateLose:
 			if event.scancode == 57:
 				self.need_restart = True
 
-
 class StateGame:    
 	generator   = None
 	unitManager = None
@@ -206,17 +205,14 @@ class StateGame:
 		self.generator     = ObjectsGenerator(screen, NUMBER_OF_ENEMIES, NUMBER_OF_OBSTACLES,Vector(resolution[0],resolution[1]))
 		self.__init_screen_objects(resolution, screen)
 		
-
 	def draw(self):
 		self.unitManager.draw()
 		self.HUD.draw() 
 
-		
 	def process_input(self,event):
 		self.unitManager.process_input(event)
 		self.HUD.process_event(event)
 			
-		
 	def __calculate_delta_time(self):
 		delta = pygame.time.get_ticks() - self.delta_time_ticks
 		self.delta_time_ticks = delta
@@ -236,5 +232,4 @@ class StateGame:
 		self.__calculate_delta_time()
 		self.unitManager.process_physics(delta)
 		self.HUD.update(delta)
-	#	print(delta)
 

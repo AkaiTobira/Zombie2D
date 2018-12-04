@@ -240,6 +240,8 @@ class Player:
 	rotate_behavior   = None
 	actions_behavior  = None
 
+
+	state 			 = "P"
 	current_position  = Vector(0,0)
 	previous_position = Vector(0,0)
 	velocity          = Vector(0,0)

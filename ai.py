@@ -196,7 +196,8 @@ class SteringWander(State):
 
     def enter(self, owner):
         self.start = time.time()
-        self.duration = randint(5, 15)
+        self.duration = randint(2, 4)
+        owner.max_speed = Vector(150,150)
         pass
 
 
@@ -209,6 +210,9 @@ class SteringWander(State):
 
         self.end = time.time()
         if self.end - self.start > self.duration: 
+            owner.ai.change_state( HideBehaviour() )
+
+        if owner.current_position.distance_to(player.current_position).len() < 200:
             owner.ai.change_state( HideBehaviour() )
 
         pass
@@ -315,8 +319,8 @@ class PlayerHunt(State):
         return stering
 
     def enter(self, owner):
-        owner.max_speed   = Vector(125,125)
-        max_stering_force = Vector(60,60)
+        owner.max_speed   = Vector(200,200)
+        max_stering_force = Vector(100,100)
         pass
 
 
@@ -324,6 +328,7 @@ class PlayerHunt(State):
         pass
 
     def execute(self, owner, player):
+        owner.max_speed   = Vector(250,250)
         stering_force  = self.calculate_steering(owner, player)
         owner.velocity =  ( owner.velocity + stering_force / owner.m ).ttrunc( owner.max_speed)
         pass

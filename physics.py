@@ -6,6 +6,8 @@ from random import randint
 from events import Events, rise_event
 from colors import Colors, get_color
 from ai     import *
+import time
+
 
 class UnitManager:
 	obstacle_list = []
@@ -16,6 +18,7 @@ class UnitManager:
 	screen         = None 
 	mv_system      = None
 	cl_system      = None
+	
 	
 	def __init__(self, units, player, screen,screen_size):
 		self.enemy_list       = units[0]
@@ -38,7 +41,7 @@ class UnitManager:
 		if event.type == Events.COLLIDE:
 			if event.who == 0:
 				self.player.process_event(event)
-				if event.hurt : self.player.decrease_HP(0.05)
+				if event.hurt : self.player.decrease_HP(1)
 				return 
 			for unit in self.enemy_list:
 				if unit.id == event.who:
@@ -118,9 +121,11 @@ class CollisionSystem:
 	ZERO_VECTOR = Vector(0,0)
 	screen_size = Vector(0,0)
 	OFFSET      = 1
+	start       = 0
 	
 	def __init__(self, units, player, screen_size):
-		self.enemy_list =  units[0] 
+		self.start         = time.time()
+		self.enemy_list    =  units[0] 
 		self.obstacle_list = units[1] 
 		self.player      = player
 		self.screen_size = Vector( screen_size[0], screen_size[1] ) 
@@ -264,6 +269,9 @@ class CollisionSystem:
 		return closest_obstacle
 
 	def __get_five(self, unit):
+		print( time.time(), self.start )
+		if time.time() - self.start < 3 : return  
+		
 		closest = []
 		for enem in self.enemy_list:
 			if enem.current_position.distance_to( unit.current_position ).len() < 65:
@@ -276,4 +284,5 @@ class CollisionSystem:
 				for c in closest:
 					c.triggered = True
 					c.ai.set_current_state(PlayerHunt())
+				self.start = time.time()
 				return

@@ -9,7 +9,7 @@ from colors    import Colors, get_color
 from hud       import HUD
 
 
-NUMBER_OF_ENEMIES   = 16
+NUMBER_OF_ENEMIES   = 24
 NUMBER_OF_OBSTACLES = 20
 
 START_POSITION      = Vector(512,360)

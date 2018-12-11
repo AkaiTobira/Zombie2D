@@ -53,12 +53,13 @@ class Enemy2:
 
 	def check_intersection(self, shoot_from, shoot_to):
 		v_shoot = shoot_to - shoot_from
-		v_obs = self.current_position - shoot_from
-		dot = v_shoot.norm().dot(v_obs.norm())
+		v_enemy = self.current_position - shoot_from
+		dot = v_shoot.norm().dot(v_enemy.norm())
 
 		point = None
 		if dot > 0 : 
-			v_len = v_obs.len()
+			v_len = v_enemy.len()
+			if v_len > v_shoot.len() : return point
 			angle = math.acos(dot)
 			distance = 2 * math.tan(angle/2) * v_len
 			if distance <= self.RADIUS:

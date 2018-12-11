@@ -134,20 +134,17 @@ class Obstacle:
 		return self.triangle.is_in_triangle(point)
 
 	def check_intersection(self, shoot_from, shoot_to):
-		v_shoot = shoot_to - shoot_from
-		v_obs = self.current_position - shoot_from
-		dot = v_shoot.norm().dot(v_obs.norm())
+		shot_dir = (shoot_to - shoot_from).norm()
+		to_obs = self.current_position - shoot_from
+		dot = shot_dir.dot(to_obs.norm())
 
-		point = None
-		if dot > 0 : 
-			v_len = v_obs.len()
-			angle = math.acos(dot)
-			distance = 2 * math.tan(angle/2) * v_len
-			if distance <= self.RADIUS:
-				v = v_shoot.norm() * v_len
-				point = shoot_from + v
+		if dot <= 0 : return None
+		else : 
+			distance = (self.current_position - shoot_from - shot_dir * to_obs.len()).len()
 
-		return point		
+			if distance > self.RADIUS : return None
+			else : return shoot_from + shot_dir * to_obs.len()
+
 
 	def process_event(self,event):
 

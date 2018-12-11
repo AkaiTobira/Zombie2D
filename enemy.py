@@ -52,21 +52,18 @@ class Enemy2:
 		self.is_dead           = False
 
 	def check_intersection(self, shoot_from, shoot_to):
-		v_shoot = shoot_to - shoot_from
-		v_enemy = self.current_position - shoot_from
-		dot = v_shoot.norm().dot(v_enemy.norm())
+		shot_dir = (shoot_to - shoot_from).norm()
+		to_enemy = self.current_position - shoot_from
+		dot = shot_dir.dot(to_enemy.norm())
 
-		point = None
-		if dot > 0 : 
-			v_len = v_enemy.len()
-			if v_len > v_shoot.len() : return point
-			angle = math.acos(dot)
-			distance = 2 * math.tan(angle/2) * v_len
-			if distance <= self.RADIUS:
-				v = v_shoot.norm() * v_len
-				point = shoot_from + v
+		if dot <= 0 : return None
+		else : 
+			if to_enemy.len() > (shoot_to - shoot_from).len() : return None
+			distance = (self.current_position - shoot_from - shot_dir * to_enemy.len()).len()
 
-		return point			
+			if distance > self.RADIUS : return None
+			else : return shoot_from + shot_dir * to_enemy.len()
+		
 
 	def process_event(self, event):
 		if event.type == pygame.MOUSEMOTION:

@@ -269,7 +269,7 @@ class CollisionSystem:
 		return closest_obstacle
 
 	def __get_five(self, unit):
-		print( time.time(), self.start )
+	#	print( time.time(), self.start )
 		if time.time() - self.start < 3 : return  
 		
 		closest = []
